@@ -1,28 +1,3 @@
-#################################################################################
-#                OCamlrss                                                       #
-#                                                                               #
-#    Copyright (C) 2004-2012 Institut National de Recherche en Informatique     #
-#    et en Automatique. All rights reserved.                                    #
-#                                                                               #
-#    This program is free software; you can redistribute it and/or modify       #
-#    it under the terms of the GNU Library General Public License version       #
-#    2.1 as published by the Free Software Foundation.                          #
-#                                                                               #
-#    This program is distributed in the hope that it will be useful,            #
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of             #
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the              #
-#    GNU Library General Public License for more details.                       #
-#                                                                               #
-#    You should have received a copy of the GNU Library General Public          #
-#    License along with this program; if not, write to the Free Software        #
-#    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA                   #
-#    02111-1307  USA                                                            #
-#                                                                               #
-#    Contact: Maxence.Guesdon@inria.fr                                          #
-#                                                                               #
-#                                                                               #
-#################################################################################
-
 #
 PACKAGES=xmlm
 
@@ -31,6 +6,7 @@ OCAMLFIND=ocamlfind
 OCAMLC=$(OCAMLFIND) ocamlc $(OF_FLAGS)
 OCAMLOPT=$(OCAMLFIND) ocamlopt $(OF_FLAGS)
 OCAMLDOC=$(OCAMLFIND) ocamldoc $(OF_FLAGS)
+OCAMLDEP=ocamldep
 
 all: byte opt
 byte: rss.cma
@@ -50,6 +26,15 @@ rss.cma: $(CMIFILES) $(CMOFILES)
 
 rss.cmxa: $(CMIFILES) $(CMXFILES)
 	$(OCAMLOPT) -o $@ -a $(CMXFILES)
+
+.PHONY: doc depend
+
+doc:
+	mkdir -p html
+	$(OCAMLDOC) -d html -html rss.mli
+
+.depend depend:
+	$(OCAMLDEP) rss*.ml rss*.mli > .depend
 
 # installation :
 ################
@@ -89,4 +74,6 @@ noheaders:
 
 %.cmx %.o:%.ml
 	$(OCAMLOPT) -c $<
+
+include .depend
 
