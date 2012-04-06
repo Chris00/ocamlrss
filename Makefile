@@ -24,6 +24,8 @@
 #################################################################################
 
 #
+VERSION=2.0
+
 PACKAGES=xmlm,unix
 
 OF_FLAGS=-package $(PACKAGES)
@@ -82,6 +84,11 @@ install: byte opt
 
 uninstall:
 	ocamlfind remove rss
+
+# archive :
+###########
+archive:
+	git archive --prefix=ocamlrss-$(VERSION)/ HEAD | gzip > ../ocamlrss-gh-pages/ocamlrss-$(VERSION).tar.gz
 
 # Cleaning :
 ############
