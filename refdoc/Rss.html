@@ -1,0 +1,461 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link rel="Up" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Rss" rel="Chapter" href="Rss.html"><link title="Types" rel="Section" href="#2_Types">
+<link title="Building items and channels" rel="Section" href="#2_Buildingitemsandchannels">
+<link title="Manipulating channels" rel="Section" href="#2_Manipulatingchannels">
+<link title="Reading channels" rel="Section" href="#2_Readingchannels">
+<link title="Writing channels" rel="Section" href="#2_Writingchannels">
+<title>Rss</title>
+</head>
+<body>
+<div class="navbar">&nbsp;<a href="index.html">Up</a>
+&nbsp;</div>
+<center><h1>Module <a href="type_Rss.html">Rss</a></h1></center>
+<br>
+<pre><span class="keyword">module</span> Rss: <code class="code">sig</code> <a href="Rss.html">..</a> <code class="code">end</code></pre>The RSS library to read and write RSS 2.0 files.<br>
+<hr width="100%">
+<br>
+<span id="2_Types"><h2>Types</h2></span><br>
+<br><code><span id="TYPEdate"><span class="keyword">type</span> <code class="type"></code>date</span> = {</code><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code>year&nbsp;: <code class="type">int</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >complete year</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code>month&nbsp;: <code class="type">int</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >1..12</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code>day&nbsp;: <code class="type">int</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >1..31</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code>hour&nbsp;: <code class="type">int</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code>minute&nbsp;: <code class="type">int</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code>second&nbsp;: <code class="type">int</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code>zone&nbsp;: <code class="type">int</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >in minutes; 60 = UTC+0100</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code>week_day&nbsp;: <code class="type">int</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >0 = sunday; -1 if not given</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr></table>
+}
+
+
+<pre><span id="VALsince_epoch"><span class="keyword">val</span> since_epoch</span> : <code class="type"><a href="Rss.html#TYPEdate">date</a> -> float</code></pre><pre><span id="VALfloat_to_date"><span class="keyword">val</span> float_to_date</span> : <code class="type">float -> <a href="Rss.html#TYPEdate">date</a></code></pre><pre><span id="VALstring_of_date"><span class="keyword">val</span> string_of_date</span> : <code class="type">?fmt:string -> <a href="Rss.html#TYPEdate">date</a> -> string</code></pre><pre><span id="TYPEemail"><span class="keyword">type</span> <code class="type"></code>email</span> = <code class="type">string</code> </pre>
+<div class="info">
+can be, for example: foo@bar.com (Mr Foo Bar)<br>
+</div>
+
+<pre><span id="TYPEurl"><span class="keyword">type</span> <code class="type"></code>url</span> = <code class="type">string</code> </pre>
+
+<br><code><span id="TYPEcategory"><span class="keyword">type</span> <code class="type"></code>category</span> = {</code><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>cat_name&nbsp;: <code class="type">string</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>cat_domain&nbsp;: <code class="type"><a href="Rss.html#TYPEurl">url</a> option</code>;</code></td>
+
+</tr></table>
+}
+
+
+<br><code><span id="TYPEimage"><span class="keyword">type</span> <code class="type"></code>image</span> = {</code><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>image_url&nbsp;: <code class="type"><a href="Rss.html#TYPEurl">url</a></code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>image_title&nbsp;: <code class="type">string</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>image_link&nbsp;: <code class="type"><a href="Rss.html#TYPEurl">url</a></code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>image_height&nbsp;: <code class="type">int option</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>image_width&nbsp;: <code class="type">int option</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>image_desc&nbsp;: <code class="type">string option</code>;</code></td>
+
+</tr></table>
+}
+
+
+<br><code><span id="TYPEtext_input"><span class="keyword">type</span> <code class="type"></code>text_input</span> = {</code><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>ti_title&nbsp;: <code class="type">string</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >The label of the Submit button in the text input area.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>ti_desc&nbsp;: <code class="type">string</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Explains the text input area.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>ti_name&nbsp;: <code class="type">string</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >The name of the text object in the text input area.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>ti_link&nbsp;: <code class="type">string</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >The URL of the CGI script that processes text input requests.</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr></table>
+}
+
+
+<br><code><span id="TYPEenclosure"><span class="keyword">type</span> <code class="type"></code>enclosure</span> = {</code><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>encl_url&nbsp;: <code class="type"><a href="Rss.html#TYPEurl">url</a></code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >URL of the enclosure</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>encl_length&nbsp;: <code class="type">int</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >size in bytes</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>encl_type&nbsp;: <code class="type">string</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >MIME type</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr></table>
+}
+
+
+<br><code><span id="TYPEguid"><span class="keyword">type</span> <code class="type"></code>guid</span> = {</code><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>guid_name&nbsp;: <code class="type">string</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >can be a permanent url, if permalink is true</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>guid_permalink&nbsp;: <code class="type">bool</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >default is true when no value was specified</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr></table>
+}
+
+
+<br><code><span id="TYPEsource"><span class="keyword">type</span> <code class="type"></code>source</span> = {</code><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>src_name&nbsp;: <code class="type">string</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>src_url&nbsp;: <code class="type"><a href="Rss.html#TYPEurl">url</a></code>;</code></td>
+
+</tr></table>
+}
+
+
+<br><code><span id="TYPEitem"><span class="keyword">type</span> <code class="type"></code>item</span> = {</code><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>item_title&nbsp;: <code class="type">string option</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Optional title</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>item_link&nbsp;: <code class="type"><a href="Rss.html#TYPEurl">url</a> option</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Optional link</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>item_desc&nbsp;: <code class="type">string option</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Optional description</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>item_pubdate&nbsp;: <code class="type"><a href="Rss.html#TYPEdate">date</a> option</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Date of publication</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>item_author&nbsp;: <code class="type"><a href="Rss.html#TYPEemail">email</a> option</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Author of the item</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>item_categories&nbsp;: <code class="type"><a href="Rss.html#TYPEcategory">category</a> list</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>item_comments&nbsp;: <code class="type"><a href="Rss.html#TYPEurl">url</a> option</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Url of comments about this item</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>item_enclosure&nbsp;: <code class="type"><a href="Rss.html#TYPEenclosure">enclosure</a> option</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>item_guid&nbsp;: <code class="type"><a href="Rss.html#TYPEguid">guid</a> option</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>item_source&nbsp;: <code class="type"><a href="Rss.html#TYPEsource">source</a> option</code>;</code></td>
+
+</tr></table>
+}
+
+
+<br><code><span id="TYPEchannel"><span class="keyword">type</span> <code class="type"></code>channel</span> = {</code><table class="typetable">
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>ch_title&nbsp;: <code class="type">string</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Mandatory title</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>ch_link&nbsp;: <code class="type"><a href="Rss.html#TYPEurl">url</a></code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Mandatory link of the site</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>ch_desc&nbsp;: <code class="type">string</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Mandatory description</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>ch_language&nbsp;: <code class="type">string option</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Language of the news</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>ch_copyright&nbsp;: <code class="type">string option</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Copyright note</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>ch_managing_editor&nbsp;: <code class="type"><a href="Rss.html#TYPEemail">email</a> option</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Managing editor of the news</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>ch_webmaster&nbsp;: <code class="type"><a href="Rss.html#TYPEemail">email</a> option</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >The webmasterof the site</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>ch_pubdate&nbsp;: <code class="type"><a href="Rss.html#TYPEdate">date</a> option</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Publication date of the channel</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>ch_last_build_date&nbsp;: <code class="type"><a href="Rss.html#TYPEdate">date</a> option</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >When the channel was last built</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>ch_categories&nbsp;: <code class="type"><a href="Rss.html#TYPEcategory">category</a> list</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>ch_generator&nbsp;: <code class="type">string option</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >The tool used to generate this channel</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>ch_docs&nbsp;: <code class="type"><a href="Rss.html#TYPEurl">url</a> option</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >An url to a RSS reference</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>ch_ttl&nbsp;: <code class="type">int option</code>;</code></td>
+<td class="typefieldcomment" align="left" valign="top" ><code>(*</code></td><td class="typefieldcomment" align="left" valign="top" >Time to live, in minutes</td><td class="typefieldcomment" align="left" valign="bottom" ><code>*)</code></td>
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>ch_image&nbsp;: <code class="type"><a href="Rss.html#TYPEimage">image</a> option</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>ch_text_input&nbsp;: <code class="type"><a href="Rss.html#TYPEtext_input">text_input</a> option</code>;</code></td>
+
+</tr>
+<tr>
+<td align="left" valign="top" >
+<code>&nbsp;&nbsp;</code></td>
+<td align="left" valign="top" >
+<code><span class="keyword">mutable&nbsp;</span>ch_items&nbsp;: <code class="type"><a href="Rss.html#TYPEitem">item</a> list</code>;</code></td>
+
+</tr></table>
+}
+
+
+<br>
+<span id="2_Buildingitemsandchannels"><h2>Building items and channels</h2></span><br>
+<pre><span id="VALitem"><span class="keyword">val</span> item</span> : <code class="type">?title:string -><br>       ?link:<a href="Rss.html#TYPEurl">url</a> -><br>       ?desc:string -><br>       ?pubdate:<a href="Rss.html#TYPEdate">date</a> -><br>       ?author:<a href="Rss.html#TYPEemail">email</a> -><br>       ?cats:<a href="Rss.html#TYPEcategory">category</a> list -><br>       ?comments:<a href="Rss.html#TYPEurl">url</a> -><br>       ?encl:<a href="Rss.html#TYPEenclosure">enclosure</a> -><br>       ?guid:<a href="Rss.html#TYPEguid">guid</a> -> ?source:<a href="Rss.html#TYPEsource">source</a> -> unit -> <a href="Rss.html#TYPEitem">item</a></code></pre><pre><span id="VALchannel"><span class="keyword">val</span> channel</span> : <code class="type">title:string -><br>       link:<a href="Rss.html#TYPEurl">url</a> -><br>       desc:string -><br>       ?language:string -><br>       ?copyright:string -><br>       ?managing_editor:<a href="Rss.html#TYPEemail">email</a> -><br>       ?webmaster:<a href="Rss.html#TYPEemail">email</a> -><br>       ?pubdate:<a href="Rss.html#TYPEdate">date</a> -><br>       ?last_build_date:<a href="Rss.html#TYPEdate">date</a> -><br>       ?cats:<a href="Rss.html#TYPEcategory">category</a> list -><br>       ?generator:string -><br>       ?docs:<a href="Rss.html#TYPEurl">url</a> -><br>       ?ttl:int -><br>       ?image:<a href="Rss.html#TYPEimage">image</a> -><br>       ?text_input:<a href="Rss.html#TYPEtext_input">text_input</a> -> <a href="Rss.html#TYPEitem">item</a> list -> <a href="Rss.html#TYPEchannel">channel</a></code></pre><pre><span id="VALcopy_item"><span class="keyword">val</span> copy_item</span> : <code class="type"><a href="Rss.html#TYPEitem">item</a> -> <a href="Rss.html#TYPEitem">item</a></code></pre><pre><span id="VALcopy_channel"><span class="keyword">val</span> copy_channel</span> : <code class="type"><a href="Rss.html#TYPEchannel">channel</a> -> <a href="Rss.html#TYPEchannel">channel</a></code></pre><br>
+<span id="2_Manipulatingchannels"><h2>Manipulating channels</h2></span><br>
+<pre><span id="VALkeep_n_items"><span class="keyword">val</span> keep_n_items</span> : <code class="type">int -> <a href="Rss.html#TYPEchannel">channel</a> -> <a href="Rss.html#TYPEchannel">channel</a></code></pre><div class="info">
+<code class="code">keep_n_items n ch</code> returns a copy of the channel, keeping only
+     <code class="code">n</code> items maximum.<br>
+</div>
+<pre><span id="VALsort_items_by_date"><span class="keyword">val</span> sort_items_by_date</span> : <code class="type"><a href="Rss.html#TYPEitem">item</a> list -> <a href="Rss.html#TYPEitem">item</a> list</code></pre><div class="info">
+Sort items by date, older last.<br>
+</div>
+<pre><span id="VALmerge_channels"><span class="keyword">val</span> merge_channels</span> : <code class="type"><a href="Rss.html#TYPEchannel">channel</a> -> <a href="Rss.html#TYPEchannel">channel</a> -> <a href="Rss.html#TYPEchannel">channel</a></code></pre><div class="info">
+<code class="code">merge_channels c1 c2</code> merges the given channels in a new channel,
+     sorting items using <a href="Rss.html#VALsort_items_by_date"><code class="code">Rss.sort_items_by_date</code></a>. Channel information are
+     copied from the first channel <code class="code">c1</code>.<br>
+</div>
+<br>
+<span id="2_Readingchannels"><h2>Reading channels</h2></span><br>
+<pre><span id="VALchannel_of_file"><span class="keyword">val</span> channel_of_file</span> : <code class="type">string -> <a href="Rss.html#TYPEchannel">channel</a></code></pre><pre><span id="VALchannel_of_string"><span class="keyword">val</span> channel_of_string</span> : <code class="type">string -> <a href="Rss.html#TYPEchannel">channel</a></code></pre><pre><span id="VALchannel_of_channel"><span class="keyword">val</span> channel_of_channel</span> : <code class="type">Pervasives.in_channel -> <a href="Rss.html#TYPEchannel">channel</a></code></pre><br>
+<span id="2_Writingchannels"><h2>Writing channels</h2></span><br>
+<pre><span id="VALprint_channel"><span class="keyword">val</span> print_channel</span> : <code class="type">?date_fmt:string -><br>       ?encoding:string -> Format.formatter -> <a href="Rss.html#TYPEchannel">channel</a> -> unit</code></pre><pre><span id="VALprint_file"><span class="keyword">val</span> print_file</span> : <code class="type">?date_fmt:string -> ?encoding:string -> string -> <a href="Rss.html#TYPEchannel">channel</a> -> unit</code></pre></body></html>

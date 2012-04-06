@@ -1,0 +1,121 @@
+<html><head>
+<link rel="stylesheet" href="style.css" type="text/css">
+<meta content="text/html; charset=iso-8859-1" http-equiv="Content-Type">
+<link rel="Start" href="index.html">
+<link title="Index of types" rel=Appendix href="index_types.html">
+<link title="Index of values" rel=Appendix href="index_values.html">
+<link title="Index of modules" rel=Appendix href="index_modules.html">
+<link title="Rss" rel="Chapter" href="Rss.html"><title>Rss</title>
+</head>
+<body>
+<code class="code"><span class="keyword">sig</span><br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;date&nbsp;=&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;year&nbsp;:&nbsp;int;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;month&nbsp;:&nbsp;int;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;day&nbsp;:&nbsp;int;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;hour&nbsp;:&nbsp;int;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;minute&nbsp;:&nbsp;int;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;second&nbsp;:&nbsp;int;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;zone&nbsp;:&nbsp;int;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;week_day&nbsp;:&nbsp;int;<br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;since_epoch&nbsp;:&nbsp;<span class="constructor">Rss</span>.date&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;float<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;float_to_date&nbsp;:&nbsp;float&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Rss</span>.date<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;string_of_date&nbsp;:&nbsp;?fmt:string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Rss</span>.date&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string<br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;email&nbsp;=&nbsp;string<br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;url&nbsp;=&nbsp;string<br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;category&nbsp;=&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;cat_name&nbsp;:&nbsp;string;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;cat_domain&nbsp;:&nbsp;<span class="constructor">Rss</span>.url&nbsp;option;<br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;image&nbsp;=&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;image_url&nbsp;:&nbsp;<span class="constructor">Rss</span>.url;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;image_title&nbsp;:&nbsp;string;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;image_link&nbsp;:&nbsp;<span class="constructor">Rss</span>.url;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;image_height&nbsp;:&nbsp;int&nbsp;option;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;image_width&nbsp;:&nbsp;int&nbsp;option;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;image_desc&nbsp;:&nbsp;string&nbsp;option;<br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;text_input&nbsp;=&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;ti_title&nbsp;:&nbsp;string;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;ti_desc&nbsp;:&nbsp;string;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;ti_name&nbsp;:&nbsp;string;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;ti_link&nbsp;:&nbsp;string;<br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;enclosure&nbsp;=&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;encl_url&nbsp;:&nbsp;<span class="constructor">Rss</span>.url;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;encl_length&nbsp;:&nbsp;int;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;encl_type&nbsp;:&nbsp;string;<br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;guid&nbsp;=&nbsp;{&nbsp;<span class="keyword">mutable</span>&nbsp;guid_name&nbsp;:&nbsp;string;&nbsp;<span class="keyword">mutable</span>&nbsp;guid_permalink&nbsp;:&nbsp;bool;&nbsp;}<br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;source&nbsp;=&nbsp;{&nbsp;<span class="keyword">mutable</span>&nbsp;src_name&nbsp;:&nbsp;string;&nbsp;<span class="keyword">mutable</span>&nbsp;src_url&nbsp;:&nbsp;<span class="constructor">Rss</span>.url;&nbsp;}<br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;item&nbsp;=&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;item_title&nbsp;:&nbsp;string&nbsp;option;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;item_link&nbsp;:&nbsp;<span class="constructor">Rss</span>.url&nbsp;option;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;item_desc&nbsp;:&nbsp;string&nbsp;option;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;item_pubdate&nbsp;:&nbsp;<span class="constructor">Rss</span>.date&nbsp;option;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;item_author&nbsp;:&nbsp;<span class="constructor">Rss</span>.email&nbsp;option;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;item_categories&nbsp;:&nbsp;<span class="constructor">Rss</span>.category&nbsp;list;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;item_comments&nbsp;:&nbsp;<span class="constructor">Rss</span>.url&nbsp;option;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;item_enclosure&nbsp;:&nbsp;<span class="constructor">Rss</span>.enclosure&nbsp;option;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;item_guid&nbsp;:&nbsp;<span class="constructor">Rss</span>.guid&nbsp;option;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;item_source&nbsp;:&nbsp;<span class="constructor">Rss</span>.source&nbsp;option;<br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;<span class="keyword">type</span>&nbsp;channel&nbsp;=&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;ch_title&nbsp;:&nbsp;string;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;ch_link&nbsp;:&nbsp;<span class="constructor">Rss</span>.url;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;ch_desc&nbsp;:&nbsp;string;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;ch_language&nbsp;:&nbsp;string&nbsp;option;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;ch_copyright&nbsp;:&nbsp;string&nbsp;option;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;ch_managing_editor&nbsp;:&nbsp;<span class="constructor">Rss</span>.email&nbsp;option;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;ch_webmaster&nbsp;:&nbsp;<span class="constructor">Rss</span>.email&nbsp;option;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;ch_pubdate&nbsp;:&nbsp;<span class="constructor">Rss</span>.date&nbsp;option;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;ch_last_build_date&nbsp;:&nbsp;<span class="constructor">Rss</span>.date&nbsp;option;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;ch_categories&nbsp;:&nbsp;<span class="constructor">Rss</span>.category&nbsp;list;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;ch_generator&nbsp;:&nbsp;string&nbsp;option;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;ch_docs&nbsp;:&nbsp;<span class="constructor">Rss</span>.url&nbsp;option;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;ch_ttl&nbsp;:&nbsp;int&nbsp;option;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;ch_image&nbsp;:&nbsp;<span class="constructor">Rss</span>.image&nbsp;option;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;ch_text_input&nbsp;:&nbsp;<span class="constructor">Rss</span>.text_input&nbsp;option;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">mutable</span>&nbsp;ch_items&nbsp;:&nbsp;<span class="constructor">Rss</span>.item&nbsp;list;<br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;item&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;?title:string&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?link:<span class="constructor">Rss</span>.url&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?desc:string&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?pubdate:<span class="constructor">Rss</span>.date&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?author:<span class="constructor">Rss</span>.email&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?cats:<span class="constructor">Rss</span>.category&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?comments:<span class="constructor">Rss</span>.url&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?encl:<span class="constructor">Rss</span>.enclosure&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?guid:<span class="constructor">Rss</span>.guid&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;?source:<span class="constructor">Rss</span>.source&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Rss</span>.item<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;channel&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;title:string&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;link:<span class="constructor">Rss</span>.url&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;desc:string&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?language:string&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?copyright:string&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?managing_editor:<span class="constructor">Rss</span>.email&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?webmaster:<span class="constructor">Rss</span>.email&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?pubdate:<span class="constructor">Rss</span>.date&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?last_build_date:<span class="constructor">Rss</span>.date&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?cats:<span class="constructor">Rss</span>.category&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?generator:string&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?docs:<span class="constructor">Rss</span>.url&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?ttl:int&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?image:<span class="constructor">Rss</span>.image&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?text_input:<span class="constructor">Rss</span>.text_input&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Rss</span>.item&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Rss</span>.channel<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;copy_item&nbsp;:&nbsp;<span class="constructor">Rss</span>.item&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Rss</span>.item<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;copy_channel&nbsp;:&nbsp;<span class="constructor">Rss</span>.channel&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Rss</span>.channel<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;keep_n_items&nbsp;:&nbsp;int&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Rss</span>.channel&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Rss</span>.channel<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;sort_items_by_date&nbsp;:&nbsp;<span class="constructor">Rss</span>.item&nbsp;list&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Rss</span>.item&nbsp;list<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;merge_channels&nbsp;:&nbsp;<span class="constructor">Rss</span>.channel&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Rss</span>.channel&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Rss</span>.channel<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;channel_of_file&nbsp;:&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Rss</span>.channel<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;channel_of_string&nbsp;:&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Rss</span>.channel<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;channel_of_channel&nbsp;:&nbsp;<span class="constructor">Pervasives</span>.in_channel&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Rss</span>.channel<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;print_channel&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;?date_fmt:string&nbsp;<span class="keywordsign">-&gt;</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;?encoding:string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Format</span>.formatter&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Rss</span>.channel&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+&nbsp;&nbsp;<span class="keyword">val</span>&nbsp;print_file&nbsp;:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;?date_fmt:string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;?encoding:string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;string&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;<span class="constructor">Rss</span>.channel&nbsp;<span class="keywordsign">-&gt;</span>&nbsp;unit<br>
+<span class="keyword">end</span></code></body></html>
