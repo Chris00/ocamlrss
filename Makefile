@@ -62,7 +62,7 @@ doc: all
 webdoc: doc
 	mkdir -p ../ocamlrss-gh-pages/refdoc
 	cp html/* ../ocamlrss-gh-pages/refdoc/
-	cp web/index.html web/style.css ../ocamlrss-gh-pages/refdoc/
+	cp web/index.html web/style.css ../ocamlrss-gh-pages/
 
 .depend depend:
 	$(OCAMLDEP) rss*.ml rss*.mli > .depend
