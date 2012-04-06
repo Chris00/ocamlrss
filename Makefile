@@ -5,8 +5,8 @@
 #    et en Automatique. All rights reserved.                                    #
 #                                                                               #
 #    This program is free software; you can redistribute it and/or modify       #
-#    it under the terms of the GNU Library General Public License version       #
-#    2.1 as published by the Free Software Foundation.                          #
+#    it under the terms of the GNU Lesser General Public License version        #
+#    3 as published by the Free Software Foundation.                            #
 #                                                                               #
 #    This program is distributed in the hope that it will be useful,            #
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of             #
@@ -55,9 +55,14 @@ rss.cmxa: $(CMIFILES) $(CMXFILES)
 
 .PHONY: doc depend
 
-doc:
+doc: all
 	mkdir -p html
 	$(OCAMLDOC) -d html -html rss.mli
+
+webdoc: doc
+	mkdir -p ../ocamlrss-gh-pages/refdoc
+	cp html/* ../ocamlrss-gh-pages/refdoc/
+	cp web/index.html web/style.css ../ocamlrss-gh-pages/refdoc/
 
 .depend depend:
 	$(OCAMLDEP) rss*.ml rss*.mli > .depend
