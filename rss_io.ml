@@ -35,7 +35,7 @@ type tree =
 let string_of_xml tree =
   try
     let b = Buffer.create 256 in
-    let output = Xmlm.make_output (`Buffer b) in
+    let output = Xmlm.make_output ~decl: false (`Buffer b) in
     let frag = function
     | E (tag, childs) -> `El (tag, childs)
     | D d -> `Data d
@@ -309,15 +309,13 @@ let channel_of_source source =
       match String.lowercase e with
         "rss" ->
           (
-           match subs with
-             [E ((("",e), atts), subs)] ->
-               (
-                match String.lowercase e with
-                  "channel" -> channel_of_xmls subs
-                | _ -> failwith "Parse error: not channel"
-               )
-           | _ ->
-               failwith "Parse error: two much things in rss"
+           try
+             let elt = List.find (find_ele "channel") subs in
+             match elt with
+               E ((("",_), atts), subs) -> channel_of_xmls subs
+             | _ -> assert false
+           with
+             Not_found -> failwith "Parse error: no channel"
           )
       |	"rdf:rdf" ->
           (

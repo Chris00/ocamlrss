@@ -1,5 +1,5 @@
 #
-PACKAGES=xmlm
+PACKAGES=xmlm,unix
 
 OF_FLAGS=-package $(PACKAGES) -annot
 OCAMLFIND=ocamlfind
@@ -35,6 +35,14 @@ doc:
 
 .depend depend:
 	$(OCAMLDEP) rss*.ml rss*.mli > .depend
+
+rsstest: rss.cmxa rsstest.ml
+	$(OCAMLOPT) -linkpkg -o $@ $^
+
+test: rsstest
+	@./rsstest test.rss > t.rss
+	@./rsstest t.rss > t2.rss
+	@((diff t.rss t2.rss && echo OK) || echo "t.rss and t2.rss differ")
 
 # installation :
 ################

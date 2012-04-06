@@ -1,6 +1,6 @@
 version = "1.0"
 description = "Reading/writing RSS files for OCaml"
-requires = "xmlm"
+requires = "xmlm,unix"
 archive(byte) = "rss.cma"
 archive(native) = "rss.cmxa"
 archive(toploop) = "rss.cma"

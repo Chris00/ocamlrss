@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0">
+  <channel>
+    <title>Cameleon</title>
+    <link>http://home.gna.org/cameleon/cameleon_news.rss</link>
+    <description>News about Cameleon.</description>
+    <language>en</language>
+    <managingEditor>zoggy@bat8.org</managingEditor>
+    <webMaster>zoggy@bat8.org</webMaster>
+    <pubDate>02 Feb 2007 15:00:00 +0000</pubDate>
+    <lastBuildDate>13 Jan 2010 11:30:00 +0000</lastBuildDate>
+    <item>
+      <title>1.9.21 is available</title>
+      <link>http://download.gna.org/cameleon/cameleon_1.9.21.tar.gz</link>
+      <description>Libraries Okey, Configwin, Gtksv_utils and gtk utilities (Gdir,
+  Gmylist, Gmytree, Gstuff) are now in a different library out of
+  Cameleon2: Lablgtk-extras (hosted on ocaml forge).
+  Library Config_file is now out of Cameleon2 and hosted on ocaml
+  forge.
+      </description>
+      <pubDate>13 Jan 2011 11:30:00 +0000</pubDate>
+    </item>
+    <item>
+      <title>1.9.20 is available</title>
+      <link>http://download.gna.org/cameleon/cameleon_1.9.20.tar.gz</link>
+      <description>Changes: new commands in ocaml-mode, compatibility
+      with ocaml 3.12.0, various fixes and improvments.
+      </description>
+      <pubDate>17 Jun 2010 09:00:00 +0000</pubDate>
+    </item>
+    <item>
+      <title>1.9.19 is available</title>
+      <link>http://download.gna.org/cameleon/cameleon_1.9.19.tar.gz</link>
+      <description>Changes: now use GtkSourceView 2.X,
+new multi-clipboard view in Chamo (the view is called "multiclip"),
+new Custop module (to create Gtk interface to toplevel programs),
+new Ed_outputs module (to display various command outputs),
+ocamlbuild support in ocaml-mode,
+various things I don't remember of,
+lots of minor fixes.
+      </description>
+      <pubDate>24 Sep 2009 07:30:00 +0000</pubDate>
+    </item>
+    <item>
+      <title>Cameleon2/Chamo at the 2nd OCaml Meeting</title>
+      <link>http://home.gna.org/cameleon/cameleon_ocaml_meeting_2009.pdf</link>
+      <description>
+      A talk was given about Cameleon2 and Chamo at the second OCaml Meeting,
+      in Grenoble on 4th february 2009. The slides are available.
+      </description>
+      <pubDate>05 Feb 2009 16:00:00 +0000</pubDate>
+    </item>
+    <item>
+      <title>1.9.18 is available</title>
+      <link>http://download.gna.org/cameleon/cameleon_1.9.18.tar.gz</link>
+      <description>Bug fixes and enhancements in Chamo:
+      Handle the encoding of files (ability to specify an encoding when opening a file, ability to
+      change the encoding of a file), keep the date when saving a file to be able to detect
+      modifications of a file while it is edited in chamo,
+      keep some buffer attributes in the chamo files, like the encoding, the mode, ...
+      Cameleon does not act as server by default (new command cam_start_server). OCaml-RSS is
+      now included in Cameleon.
+    </description>
+      <pubDate>02 Feb 2007 16:00:00 +0000</pubDate>
+    </item>
+    <item>
+      <title>1.9.17 is available</title>
+      <link>http://download.gna.org/cameleon/cameleon_1.9.17.tar.gz</link>
+      <description>Bug fixes and enhancements in Chamo. Search, query-replace and completion are available in Chamo, with regular expressions based on PCRE.</description>
+      <pubDate>27 Nov 2006 16:00:00 +0000</pubDate>
+    </item>
+    <item>
+      <title>1.9.16 is available</title>
+      <link>http://download.gna.org/cameleon/cameleon_1.9.16.tar.gz</link>
+      <description>The chamo editor is included and usable in cameleon. Many fixes and enhancements.</description>
+      <pubDate>10 Oct 2006 12:00:00 +0000</pubDate>
+    </item>
+    <item>
+      <title>1.9.15 is available</title>
+      <link>http://download.gna.org/cameleon/cameleon_1.9.15.tar.gz</link>
+      <description>Cameleon now includes chamo, a powerful text editor with OCaml as scripting language.</description>
+      <pubDate>06 Oct 2006 09:44:00 +0000</pubDate>
+    </item>
+    <item>
+      <title>1.9.13 is available</title>
+      <link>http://download.gna.org/cameleon/cameleon_1.9.13.tar.gz</link>
+      <description>A new configuration process which uses an OCaml script to detect required tools and  libraries. Fixes and enhancements.</description>
+      <pubDate>10 May 2006 11:30:07 +0000</pubDate>
+    </item>
+  </channel>
+</rss>
