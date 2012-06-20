@@ -79,8 +79,8 @@ test: rsstest
 
 # installation :
 ################
-install: byte opt
-	$(OCAMLFIND) install rss META LICENSE rss.cmi rss.cma rss.cmxa rss.a
+install: 
+	$(OCAMLFIND) install rss META LICENSE $(wildcard rss.cmi rss.cma rss.cmxa rss.a rss.cmxs rss.mli rss.cmx)
 
 uninstall:
 	ocamlfind remove rss
@@ -93,7 +93,9 @@ archive:
 # Cleaning :
 ############
 clean:
-	rm -f *.cm* *.a *.annot *.o
+	-$(RM) *.cm* *.a *.annot *.o
+	-$(RM) -r html
+	-$(RM) rsstest t2.rss t.rss
 
 # headers :
 ###########
@@ -120,6 +122,9 @@ noheaders:
 
 %.cmx %.o:%.ml
 	$(OCAMLOPT) -c $<
+
+%.cmxs: %.cmxa
+	$(OCAMLOPT) -I . -shared -linkall -o $@ $<
 
 include .depend
 
