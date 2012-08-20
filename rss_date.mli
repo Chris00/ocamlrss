@@ -87,7 +87,7 @@ val parse_epoch : string -> float
 
 
 val format_to : Buffer.t -> fmt:string -> t -> unit
-  (* Format a date/time record according to the format string and outputs
+ (** Format a date/time record according to the format string and outputs
    * the resulting string to the channel.
    *
    * The format string consists of zero or more conversion specifications
@@ -174,7 +174,6 @@ val format_to : Buffer.t -> fmt:string -> t -> unit
    *        (common form for RFC 822 date headers).
    *
    *  %%    a `%' character.
-   * 
    *)
 
 val format : fmt:string -> t -> string
