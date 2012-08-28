@@ -66,59 +66,59 @@ type url = string
 
 type category =
   {
-    mutable cat_name : string ;
+    cat_name : string ;
     (** A forward-slash-separated string that identifies a hierarchic
         location in the indicated taxonomy. *)
-    mutable cat_domain : url option ;
+    cat_domain : url option ;
     (** Identifies a categorization taxonomy. *)
   }
 
 type image =
   {
-    mutable image_url : url ;
+    image_url : url ;
     (** The URL of a GIF, JPEG or PNG image that represents the channel. *)
-    mutable image_title : string ;
+    image_title : string ;
     (** Description of the image, it's used in the ALT attribute of
         the HTML <img> tag when the channel is rendered in HTML.  *)
-    mutable image_link : url ;
+    image_link : url ;
     (** The URL of the site, when the channel is rendered, the image
         is a link to the site. (Note, in practice the [image_title]
         and [image_link] should have the same value as the {!channel}'s
         [ch_title] and [ch_link].)  *)
-    mutable image_height : int option ;
+    image_height : int option ;
     (** Height of the image, in pixels. *)
-    mutable image_width : int option ;
+    image_width : int option ;
     (** Width of the image, in pixels. *)
-    mutable image_desc : string option ;
+    image_desc : string option ;
     (** Text to be included in the "title" attribute of the link formed
         around the image in the HTML rendering. *)
   }
 
 type text_input =
     {
-      mutable ti_title : string ;
+      ti_title : string ;
       (** The label of the Submit button in the text input area. *)
-      mutable ti_desc : string ;
+      ti_desc : string ;
       (** Explains the text input area. *)
-      mutable ti_name : string ;
+      ti_name : string ;
       (** The name of the text object in the text input area. *)
-      mutable ti_link : string ;
+      ti_link : string ;
       (** The URL of the CGI script that processes text input requests. *)
     }
 
 type enclosure =
   {
-    mutable encl_url : url ; (** URL of the enclosure *)
-    mutable encl_length : int ; (** size in bytes *)
-    mutable encl_type : string ; (** MIME type *)
+    encl_url : url ; (** URL of the enclosure *)
+    encl_length : int ; (** size in bytes *)
+    encl_type : string ; (** MIME type *)
   }
 
 type guid =
   {
-    mutable guid_name : string ;
+    guid_name : string ;
     (** A string that uniquely identifies the item.  It can be a
         permanent url, if permalink is true *)
-    mutable guid_permalink : bool ;
+    guid_permalink : bool ;
     (** If true, [guid_name] is a permanent URL pointing to the story.
         If its value is false, the guid may not be assumed to be a
         url, or a url to anything in particular. *)
@@ -126,8 +126,8 @@ type guid =
 
 type source =
     {
-      mutable src_name : string ;
-      mutable src_url : url ;
+      src_name : string ;
+      src_url : url ;
     }
 
 (** An item may represent a "story".  Its description is a synopsis of
@@ -135,54 +135,54 @@ type source =
     the full story. *)
 type item =
     {
-      mutable item_title : string option; (** Optional title *)
-    mutable item_link : url option; (** Optional link *)
-    mutable item_desc : string option; (** Optional description *)
-    mutable item_pubdate : date option ; (** Date of publication *)
-    mutable item_author : email option ;
+      item_title : string option; (** Optional title *)
+    item_link : url option; (** Optional link *)
+    item_desc : string option; (** Optional description *)
+    item_pubdate : date option ; (** Date of publication *)
+    item_author : email option ;
     (** The email address of the author of the item. *)
-    mutable item_categories : category list ;
+    item_categories : category list ;
     (** Categories for the item.  See the field {!category}. *)
-    mutable item_comments : url option ; (** Url of comments about this item *)
-    mutable item_enclosure : enclosure option ;
-    mutable item_guid : guid option ;
+    item_comments : url option ; (** Url of comments about this item *)
+    item_enclosure : enclosure option ;
+    item_guid : guid option ;
     (** A globally unique identifier for the item. *)
-    mutable item_source : source option ;
+    item_source : source option ;
   }
 
 type channel =
   {
-    mutable ch_title : string ;
+    ch_title : string ;
     (** Mandatory.  The name of the channel, for example the title of
         your web site. *)
-    mutable ch_link : url ;
+    ch_link : url ;
     (** Mandatory.  The URL to the HTML website corresponding to the channel. *)
-    mutable ch_desc : string ;
+    ch_desc : string ;
     (** Mandatory.  A sentence describing the channel. *)
-    mutable ch_language : string option ;
+    ch_language : string option ;
     (** Language of the news, e.g. "en".  See the W3C
         {{:http://www.w3.org/TR/REC-html40/struct/dirlang.html#langcodes}
         language codes}. *)
-    mutable ch_copyright : string option ; (** Copyright notice. *)
-    mutable ch_managing_editor : email option ;
+    ch_copyright : string option ; (** Copyright notice. *)
+    ch_managing_editor : email option ;
     (** Managing editor of the news. *)
-    mutable ch_webmaster : email option ;
+    ch_webmaster : email option ;
     (** The address of the webmasterof the site. *)
-    mutable ch_pubdate : date option ;
+    ch_pubdate : date option ;
     (** Publication date of the channel. *)
-    mutable ch_last_build_date : date option ;
+    ch_last_build_date : date option ;
     (** When the channel content changed for the last time. *)
-    mutable ch_categories : category list ;
+    ch_categories : category list ;
     (** Categories for the channel.  See the field {!category}. *)
-    mutable ch_generator : string option ;
+    ch_generator : string option ;
     (** The tool used to generate this channel. *)
-    mutable ch_docs : url option ; (** An url to a RSS format reference. *)
-    mutable ch_ttl : int option ;
+    ch_docs : url option ; (** An url to a RSS format reference. *)
+    ch_ttl : int option ;
     (** Time to live, in minutes.  It indicates how long a channel can
         be cached before refreshing from the source. *)
-    mutable ch_image : image option ;
-    mutable ch_text_input : text_input option ;
-    mutable ch_items : item list ;
+    ch_image : image option ;
+    ch_text_input : text_input option ;
+    ch_items : item list ;
   }
 
 (** {2 Building items and channels} *)

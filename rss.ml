@@ -42,79 +42,79 @@ type email = string (** can be, for example: foo@bar.com (Mr Foo Bar) *)
 type url = string
 type category = Rss_types.category =
     {
-      mutable cat_name : string ;
-      mutable cat_domain : url option ;
+      cat_name : string ;
+      cat_domain : url option ;
     }
 
 type image = Rss_types.image =
     {
-      mutable image_url : url ;
-      mutable image_title : string ;
-      mutable image_link : url ;
-      mutable image_height : int option ;
-      mutable image_width : int option ;
-      mutable image_desc : string option ;
+      image_url : url ;
+      image_title : string ;
+      image_link : url ;
+      image_height : int option ;
+      image_width : int option ;
+      image_desc : string option ;
     }
 
 type text_input = Rss_types.text_input =
     {
-      mutable ti_title : string ; (** The label of the Submit button in the text input area. *)
-      mutable ti_desc : string ; (** Explains the text input area. *)
-      mutable ti_name : string ; (** The name of the text object in the text input area. *)
-      mutable ti_link : string ; (** The URL of the CGI script that processes text input requests. *)
+      ti_title : string ; (** The label of the Submit button in the text input area. *)
+      ti_desc : string ; (** Explains the text input area. *)
+      ti_name : string ; (** The name of the text object in the text input area. *)
+      ti_link : string ; (** The URL of the CGI script that processes text input requests. *)
     }
 
 type enclosure = Rss_types.enclosure =
     {
-      mutable encl_url : url ; (** URL of the enclosure *)
-      mutable encl_length : int ; (** size in bytes *)
-      mutable encl_type : string ; (** MIME type *)
+      encl_url : url ; (** URL of the enclosure *)
+      encl_length : int ; (** size in bytes *)
+      encl_type : string ; (** MIME type *)
     }
 
 type guid = Rss_types.guid =
     {
-      mutable guid_name : string ; (** can be a permanent url, if permalink is true *)
-      mutable guid_permalink : bool ; (** default is true when no value was specified *)
+      guid_name : string ; (** can be a permanent url, if permalink is true *)
+      guid_permalink : bool ; (** default is true when no value was specified *)
     }
 
 type source = Rss_types.source =
     {
-      mutable src_name : string ;
-      mutable src_url : url ;
+      src_name : string ;
+      src_url : url ;
     }
 
 type item = Rss_types.item =
     {
-      mutable item_title : string option;
-      mutable item_link : url option;
-      mutable item_desc : string option;
-      mutable item_pubdate : date option ;
-      mutable item_author : email option ;
-      mutable item_categories : category list ;
-      mutable item_comments : url option ;
-      mutable item_enclosure : enclosure option ;
-      mutable item_guid : guid option ;
-      mutable item_source : source option ;
+      item_title : string option;
+      item_link : url option;
+      item_desc : string option;
+      item_pubdate : date option ;
+      item_author : email option ;
+      item_categories : category list ;
+      item_comments : url option ;
+      item_enclosure : enclosure option ;
+      item_guid : guid option ;
+      item_source : source option ;
     }
 
 type channel = Rss_types.channel =
     {
-      mutable ch_title : string ;
-      mutable ch_link : url ;
-      mutable ch_desc : string ;
-      mutable ch_language : string option ;
-      mutable ch_copyright : string option ;
-      mutable ch_managing_editor : email option ;
-      mutable ch_webmaster : email option ;
-      mutable ch_pubdate : date option ;
-      mutable ch_last_build_date : date option ;
-      mutable ch_categories : category list ;
-      mutable ch_generator : string option ;
-      mutable ch_docs : url option ;
-      mutable ch_ttl : int option ;
-      mutable ch_image : image option ;
-      mutable ch_text_input : text_input option ;
-      mutable ch_items : item list ;
+      ch_title : string ;
+      ch_link : url ;
+      ch_desc : string ;
+      ch_language : string option ;
+      ch_copyright : string option ;
+      ch_managing_editor : email option ;
+      ch_webmaster : email option ;
+      ch_pubdate : date option ;
+      ch_last_build_date : date option ;
+      ch_categories : category list ;
+      ch_generator : string option ;
+      ch_docs : url option ;
+      ch_ttl : int option ;
+      ch_image : image option ;
+      ch_text_input : text_input option ;
+      ch_items : item list ;
     }
 
 let item ?title
@@ -197,8 +197,7 @@ let sort_items_by_date =
 let merge_channels c1 c2 =
   let items = sort_items_by_date (c1.ch_items @ c2.ch_items) in
   let c = copy_channel c1 in
-  c.ch_items <- items ;
-  c
+  { c with ch_items = items }
 ;;
 
 
@@ -223,7 +222,6 @@ let keep_n_items n channel =
   | i :: q -> iter (i :: acc) (m+1) q
   in
   let c = copy_channel channel in
-  c.ch_items <- iter [] 1 c.ch_items;
-  c
+  { c with ch_items = iter [] 1 c.ch_items }
 ;;
   
