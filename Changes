@@ -1,8 +1,12 @@
 Next release:
+- handle namespaces (the list is stored in the channel structure)
+- allow the library user to read addition information from
+  <item> and <channel> prefixed subnodes, as the RSS 2.0 specification
+  indicates this is the way to extend RSS information
 - handle cloud, skipHours, skipDays, picsRating in Channel
 - use Neturl.url instead of sting
 - use Netdate instead of Rss_date, which was a copy of Netdate
 - default encoding is now UTF-8
 - new parameter "indent" for printing
 - new "opts" parameter when reading
-- reading returns error list besides channel.
+- reading returns error list besides channel
