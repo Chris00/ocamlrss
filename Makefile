@@ -38,7 +38,7 @@ OCAMLDEP=ocamldep
 
 all: byte opt
 byte: rss.cma
-opt: rss.cmxa
+opt: rss.cmxa rss.cmxs
 
 CMOFILES= \
 	rss_types.cmo \
