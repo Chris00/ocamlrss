@@ -129,9 +129,9 @@ type cloud = {
 (** An item may represent a "story".  Its description is a synopsis of
     the story (or sometimes the full story), and the link points to
     the full story. *)
-type item =
-    {
-      item_title : string option; (** Optional title *)
+type 'a item_t =
+  {
+    item_title : string option; (** Optional title *)
     item_link : url option; (** Optional link *)
     item_desc : string option; (** Optional description *)
     item_pubdate : date option ; (** Date of publication *)
@@ -144,9 +144,10 @@ type item =
     item_guid : guid option ;
     (** A globally unique identifier for the item. *)
     item_source : source option ;
+    item_data : 'a option ;
   }
 
-type channel =
+type ('a, 'b) channel_t =
   {
     ch_title : string ;
     (** Mandatory.  The name of the channel, for example the title of
@@ -186,8 +187,13 @@ type channel =
     (** A hint for aggregators telling them which hours they can skip.*)
     ch_skip_days : skip_days option ;
     (** A hint for aggregators telling them which days they can skip. *)
-    ch_items : item list ;
+    ch_items : 'b item_t list ;
+    ch_data : 'a option ;
   }
+
+
+type item = unit item_t
+type channel = (unit, unit) channel_t
 
 (** {2 Building items and channels} *)
 
@@ -202,8 +208,9 @@ val item :
   ?encl: enclosure ->
   ?guid: guid ->
   ?source: source ->
+  ?data: 'a ->
   unit ->
-  item
+  'a item_t
 (** [item()] creates a new item with all find set to [None].  Use the
     optional parameters to set fields. *)
 
@@ -227,8 +234,10 @@ val channel :
   ?text_input: text_input ->
   ?skip_hours: skip_hours ->
   ?skip_days: skip_days ->
-  item list ->
-  channel
+  ?data: 'a ->
+  'b item_t list ->
+  ('a, 'b) channel_t
+
 (** [channel items] creates a new channel containing [items].  Other
     fields are set to [None] unless the corresponding optional
     parameter is used. *)
@@ -254,21 +263,35 @@ val merge_channels : channel -> channel -> channel
 
 (** {2 Reading channels} *)
 
+type xmltree =
+    E of Xmlm.tag * xmltree list
+  | D of string
+
 (** Options used when reading source. *)
-type opts
+type ('a, 'b) opts
 
 (** See Neturl documentation for [schemes] and [base_syntax] options.
   They are used to parse URLs. *)
 val make_opts :
   ?schemes: (string, Neturl.url_syntax) Hashtbl.t ->
-  ?base_syntax: Neturl.url_syntax -> unit -> opts
+  ?base_syntax: Neturl.url_syntax ->
+  ?read_channel_data: (xmltree list -> 'a option) ->
+  ?read_item_data: (xmltree list -> 'b option) ->
+  unit -> ('a, 'b) opts
 
-(** [channel_of_X] returns the parsed channel and a list of encountered errors.
+val default_opts : (unit, unit) opts
+
+(** [channel_[t_]of_X] returns the parsed channel and a list of encountered errors.
   @raise Failure if the channel could not be parsed.
 *)
-val channel_of_file : ?opts: opts -> string -> (channel * string list)
-val channel_of_string : ?opts: opts -> string -> (channel * string list)
-val channel_of_channel : ?opts: opts -> in_channel -> (channel * string list)
+val channel_t_of_file : ('a, 'b) opts -> string -> (('a, 'b) channel_t * string list)
+val channel_t_of_string : ('a, 'b) opts -> string -> (('a, 'b) channel_t * string list)
+val channel_t_of_channel : ('a, 'b) opts -> in_channel -> (('a, 'b) channel_t * string list)
+
+
+val channel_of_file : string -> (channel * string list)
+val channel_of_string : string -> (channel * string list)
+val channel_of_channel : in_channel -> (channel * string list)
 
 (** {2 Writing channels} *)
 

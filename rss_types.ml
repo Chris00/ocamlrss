@@ -80,7 +80,7 @@ type source =
       src_url : url ;
     }
 
-type item =
+type 'a item_t =
     {
       item_title : string option ;
       item_link : url option ;
@@ -92,9 +92,12 @@ type item =
       item_enclosure : enclosure option ;
       item_guid : guid option ;
       item_source : source option ;
+      item_data : 'a option ;
     }
 
-type channel =
+
+
+type ('a, 'b) channel_t =
     {
       ch_title : string ;
       ch_link : url ;
@@ -115,5 +118,9 @@ type channel =
       ch_text_input : text_input option ;
       ch_skip_hours : skip_hours option ;
       ch_skip_days : skip_days option ;
-      ch_items : item list ;
+      ch_items : 'b item_t list ;
+      ch_data : 'a option ;
     }
+
+type item = unit item_t
+type channel = (unit, unit) channel_t

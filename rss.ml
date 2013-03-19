@@ -85,7 +85,7 @@ type source = Rss_types.source =
     src_url : url ;
   }
 
-type item = Rss_types.item =
+type 'a item_t = 'a Rss_types.item_t =
   {
     item_title : string option ;
     item_link : url option ;
@@ -97,9 +97,10 @@ type item = Rss_types.item =
     item_enclosure : enclosure option ;
     item_guid : guid option ;
     item_source : source option ;
+    item_data : 'a option ;
   }
 
-type channel = Rss_types.channel =
+type ('a, 'b) channel_t = ('a, 'b) Rss_types.channel_t =
   {
     ch_title : string ;
     ch_link : url ;
@@ -120,9 +121,12 @@ type channel = Rss_types.channel =
     ch_text_input : text_input option ;
     ch_skip_hours : skip_hours option ;
     ch_skip_days : skip_days option ;
-    ch_items : item list ;
+    ch_items : 'b item_t list ;
+    ch_data : 'a option ;
     }
 
+type item = unit item_t
+type channel = (unit, unit) channel_t
 
 let item ?title
     ?link
@@ -134,6 +138,7 @@ let item ?title
     ?encl
     ?guid
     ?source
+    ?data
     () =
   {
     item_title = title ;
@@ -146,6 +151,7 @@ let item ?title
     item_enclosure = encl ;
     item_guid = guid ;
     item_source = source ;
+    item_data = data ;
   }
 
 let channel ~title ~link ~desc
@@ -165,6 +171,7 @@ let channel ~title ~link ~desc
     ?text_input
     ?skip_hours
     ?skip_days
+    ?data
     items
     =
   {
@@ -188,6 +195,7 @@ let channel ~title ~link ~desc
     ch_skip_hours = skip_hours ;
     ch_skip_days = skip_days ;
     ch_items = items ;
+    ch_data = data ;
   }
 
 let copy_item i = { i with item_title = i.item_title };;
@@ -215,13 +223,22 @@ let merge_channels c1 c2 =
   { c with ch_items = items }
 ;;
 
-type opts = Rss_io.opts
+type xmltree = Rss_io.xmltree =
+    E of Xmlm.tag * xmltree list
+  | D of string
+
+type ('a, 'b) opts = ('a, 'b) Rss_io.opts
 
 let make_opts = Rss_io.make_opts
+let default_opts = Rss_io.default_opts
 
-let channel_of_file = Rss_io.channel_of_file
-let channel_of_string = Rss_io.channel_of_string
-let channel_of_channel = Rss_io.channel_of_channel
+let channel_t_of_file = Rss_io.channel_of_file
+let channel_t_of_string = Rss_io.channel_of_string
+let channel_t_of_channel = Rss_io.channel_of_channel
+
+let channel_of_file = Rss_io.channel_of_file default_opts
+let channel_of_string = Rss_io.channel_of_string default_opts
+let channel_of_channel = Rss_io.channel_of_channel default_opts
 
 let print_channel = Rss_io.print_channel
 

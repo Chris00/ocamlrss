@@ -28,8 +28,8 @@ open Rss_types
 
 (** Parsing/Printing RSS documents. *)
 
-type tree =
-    E of Xmlm.tag * tree list
+type xmltree =
+    E of Xmlm.tag * xmltree list
   | D of string
 
 let string_of_xml ?indent tree =
@@ -77,11 +77,14 @@ let xml_of_source source =
 
 (** {2 Parsing} *)
 
-type opts =
+type ('a, 'b) opts =
   { schemes : (string, Neturl.url_syntax) Hashtbl.t ;
     base_syntax : Neturl.url_syntax ;
     mutable errors : string list ;
+    read_channel_data : (xmltree list -> 'a option) option ;
+    read_item_data : (xmltree list -> 'b option) option ;
   }
+
 let add_error opts msg = opts.errors <- msg :: opts.errors;;
 
 exception Error of string;;
@@ -269,6 +272,20 @@ let get_text_input opts xmls =
   | Error msg -> add_error opts msg; None
   | _ -> None
 
+let filter_prefixed_nodes =
+  List.filter
+    (function
+     | D _ | E ((("",_),_), _) -> false
+     | _ -> true
+    )
+;;
+
+let read_ns_data f xmls =
+  match f with
+    None -> None
+  | Some f ->
+    let xmls = filter_prefixed_nodes xmls in
+    f xmls
 
 let item_of_xmls opts xmls =
   let f_opt s =
@@ -284,6 +301,13 @@ let item_of_xmls opts xmls =
             add_error opts (Printf.sprintf "Invalid date %S" s);
             None
   in
+  let data =
+    try read_ns_data opts.read_item_data xmls
+    with
+      Error msg ->
+        add_error opts msg;
+        None
+  in
   try
     let item =
       {
@@ -297,6 +321,7 @@ let item_of_xmls opts xmls =
         item_enclosure = get_enclosure opts xmls ;
         item_guid = get_guid opts xmls ;
         item_source = get_source opts xmls ;
+        item_data = data ;
       }
     in
     Some item
@@ -440,6 +465,13 @@ let channel_of_xmls opts xmls =
         add_error opts msg;
         None
   in
+  let data =
+    try read_ns_data opts.read_channel_data xmls
+    with
+      Error msg ->
+        add_error opts msg;
+        None
+  in
   { ch_title = f "title" ;
     ch_link = link ;
     ch_desc = f "description" ;
@@ -460,6 +492,7 @@ let channel_of_xmls opts xmls =
     ch_skip_hours = get_skip_hours opts xmls ;
     ch_skip_days = get_skip_days opts xmls ;
     ch_items = items_of_xmls opts xmls ;
+    ch_data = data ;
   }
 
 let channel_of_source opts source =
@@ -502,15 +535,19 @@ let channel_of_source opts source =
 let make_opts
   ?(schemes=Neturl.common_url_syntax)
     ?(base_syntax=Hashtbl.find Neturl.common_url_syntax "http")
+    ?read_channel_data
+    ?read_item_data
     () =
-    { schemes ; base_syntax ; errors = [] }
+    { schemes ; base_syntax ; errors = [] ;
+      read_item_data ; read_channel_data ;
+    }
 
 let default_opts = make_opts ();;
 
-let channel_of_string ?(opts=default_opts) s =
+let channel_of_string opts s =
   channel_of_source opts (`String (0, s))
 
-let channel_of_file ?(opts=default_opts) file =
+let channel_of_file opts file =
   let ic = open_in file in
   try
     channel_of_source opts (`Channel ic)
@@ -520,7 +557,7 @@ let channel_of_file ?(opts=default_opts) file =
       raise e
 ;;
 
-let channel_of_channel ?(opts=default_opts) ch = channel_of_source opts (`Channel ch);;
+let channel_of_channel opts ch = channel_of_source opts (`Channel ch);;
 
 (** {2 Printing} *)
 

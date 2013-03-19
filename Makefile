@@ -69,7 +69,7 @@ webdoc: doc
 	$(OCAMLDEP) rss*.ml rss*.mli > .depend
 
 rsstest: rss.cmxa rsstest.ml
-	$(OCAMLOPT) -linkpkg -o $@ $^
+	$(OCAMLOPT) -linkpkg -o $@ $(OCAML_COMPFLAGS) $^
 
 test: rsstest
 	@./rsstest test.rss > t.rss
@@ -111,16 +111,16 @@ noheaders:
 .SUFFIXES: .mli .ml .cmi .cmo .cmx .mll .mly .sch .html .mail
 
 %.cmi:%.mli
-	$(OCAMLC) -c $<
+	$(OCAMLC) -c $(OCAML_COMPFLAGS) $<
 
 %.cmo:%.ml
-	$(OCAMLC) -c $<
+	$(OCAMLC) -c $(OCAML_COMPFLAGS) $<
 
 %.cmi %.cmo:%.ml
-	$(OCAMLC) -c $<
+	$(OCAMLC) -c $(OCAML_COMPFLAGS) $<
 
 %.cmx %.o:%.ml
-	$(OCAMLOPT) -c $<
+	$(OCAMLOPT) -c $(OCAML_COMPFLAGS) $<
 
 %.cmxs: %.cmxa
 	$(OCAMLOPT) -I . -shared -linkall -o $@ $<
