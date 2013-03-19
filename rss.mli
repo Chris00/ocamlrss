@@ -31,16 +31,7 @@
 
 (** {2 Types} *)
 
-type date = {
-    year : int;    (** complete (4 digits) year. *)
-    month : int;   (** 1..12 *)
-    day : int;     (** 1..31 *)
-    hour : int;
-    minute : int;
-    second : int;
-    zone : int;    (** in minutes; 60 = UTC+0100 *)
-    week_day : int (** 0 = sunday; -1 if not given *)
-  }
+type date = Netdate.t
 
 val since_epoch : date -> float
 (** Convert a date/time record into the time (seconds since the epoch). *)
@@ -60,9 +51,12 @@ val string_of_date : ?fmt: string -> date -> string
     Default: ["%d %b %Y"].
  *)
 
-type email = string (** can be, for example: foo\@bar.com (Mr Foo Bar) *)
-type url = string
+type email = string (** can be, for example: foo@bar.com (Mr Foo Bar) *)
+type pics_rating = string
+type skip_hours = int list (** 0 .. 23 *)
+type skip_days = int list (** 0 is Sunday, 1 is Monday, ... *)
 
+type url = Neturl.url
 
 type category =
   {
@@ -102,7 +96,7 @@ type text_input =
       (** Explains the text input area. *)
       ti_name : string ;
       (** The name of the text object in the text input area. *)
-      ti_link : string ;
+      ti_link : url ;
       (** The URL of the CGI script that processes text input requests. *)
     }
 
@@ -114,21 +108,23 @@ type enclosure =
   }
 
 type guid =
-  {
-    guid_name : string ;
-    (** A string that uniquely identifies the item.  It can be a
-        permanent url, if permalink is true *)
-    guid_permalink : bool ;
-    (** If true, [guid_name] is a permanent URL pointing to the story.
-        If its value is false, the guid may not be assumed to be a
-        url, or a url to anything in particular. *)
-  }
+  | Guid_permalink of url (** A permanent URL pointing to the story. *)
+  | Guid_name of string   (** A string that uniquely identifies the item.  *)
 
 type source =
     {
       src_name : string ;
       src_url : url ;
     }
+
+(** See {{:http://cyber.law.harvard.edu/rss/soapMeetsRss.html#rsscloudInterface} specification} *)
+type cloud = {
+    cloud_domain : string ;
+    cloud_port : int ;
+    cloud_path : string ;
+    cloud_register_procedure : string ;
+    cloud_protocol : string ;
+  }
 
 (** An item may represent a "story".  Its description is a synopsis of
     the story (or sometimes the full story), and the link points to
@@ -176,12 +172,20 @@ type channel =
     (** Categories for the channel.  See the field {!category}. *)
     ch_generator : string option ;
     (** The tool used to generate this channel. *)
+    ch_cloud : cloud option ;
+    (** Allows processes to register with a cloud to be notified of updates to the channel. *)
     ch_docs : url option ; (** An url to a RSS format reference. *)
     ch_ttl : int option ;
     (** Time to live, in minutes.  It indicates how long a channel can
         be cached before refreshing from the source. *)
     ch_image : image option ;
+    ch_rating : pics_rating option;
+    (** The PICS rating for the channel. *)
     ch_text_input : text_input option ;
+    ch_skip_hours : skip_hours option ;
+    (** A hint for aggregators telling them which hours they can skip.*)
+    ch_skip_days : skip_days option ;
+    (** A hint for aggregators telling them which days they can skip. *)
     ch_items : item list ;
   }
 
@@ -215,10 +219,14 @@ val channel :
   ?last_build_date: date ->
   ?cats: category list ->
   ?generator: string ->
+  ?cloud: cloud ->
   ?docs: url ->
   ?ttl: int ->
   ?image: image ->
+  ?rating: pics_rating ->
   ?text_input: text_input ->
+  ?skip_hours: skip_hours ->
+  ?skip_days: skip_days ->
   item list ->
   channel
 (** [channel items] creates a new channel containing [items].  Other
@@ -246,9 +254,21 @@ val merge_channels : channel -> channel -> channel
 
 (** {2 Reading channels} *)
 
-val channel_of_file : string -> channel
-val channel_of_string : string -> channel
-val channel_of_channel : in_channel -> channel
+(** Options used when reading source. *)
+type opts
+
+(** See Neturl documentation for [schemes] and [base_syntax] options.
+  They are used to parse URLs. *)
+val make_opts :
+  ?schemes: (string, Neturl.url_syntax) Hashtbl.t ->
+  ?base_syntax: Neturl.url_syntax -> unit -> opts
+
+(** [channel_of_X] returns the parsed channel and a list of encountered errors.
+  @raise Failure if the channel could not be parsed.
+*)
+val channel_of_file : ?opts: opts -> string -> (channel * string list)
+val channel_of_string : ?opts: opts -> string -> (channel * string list)
+val channel_of_channel : ?opts: opts -> in_channel -> (channel * string list)
 
 (** {2 Writing channels} *)
 

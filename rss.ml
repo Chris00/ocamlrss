@@ -23,23 +23,19 @@
 (*                                                                            *)
 (******************************************************************************)
 
-type date = Rss_date.t = {
-  year : int;		(** complete year *)
-  month : int;		(** 1..12 *)
-  day : int;		(** 1..31 *)
-  hour : int;
-  minute : int;
-  second : int;
-  zone : int;		(** in minutes; 60 = UTC+0100 *)
-  week_day : int	(** 0 = sunday; -1 if not given *)
-}
+type date = Netdate.t
 
-let since_epoch = Rss_date.since_epoch
-let float_to_date t = Rss_date.create t
-let string_of_date ?(fmt="%d %b %Y") date = Rss_date.format ~fmt date
+let since_epoch = Netdate.since_epoch
+let float_to_date t = Netdate.create t
+let string_of_date ?(fmt="%d %b %Y") date = Netdate.format ~fmt date
 
 type email = string (** can be, for example: foo@bar.com (Mr Foo Bar) *)
-type url = string
+type pics_rating = string
+type skip_hours = int list (** 0 .. 23 *)
+type skip_days = int list (** 0 is Sunday, 1 is Monday, ... *)
+
+type url = Neturl.url
+
 type category = Rss_types.category =
     {
       cat_name : string ;
@@ -61,7 +57,7 @@ type text_input = Rss_types.text_input =
       ti_title : string ; (** The label of the Submit button in the text input area. *)
       ti_desc : string ; (** Explains the text input area. *)
       ti_name : string ; (** The name of the text object in the text input area. *)
-      ti_link : string ; (** The URL of the CGI script that processes text input requests. *)
+      ti_link : url ; (** The URL of the CGI script that processes text input requests. *)
     }
 
 type enclosure = Rss_types.enclosure =
@@ -71,51 +67,62 @@ type enclosure = Rss_types.enclosure =
       encl_type : string ; (** MIME type *)
     }
 
-type guid = Rss_types.guid =
-    {
-      guid_name : string ; (** can be a permanent url, if permalink is true *)
-      guid_permalink : bool ; (** default is true when no value was specified *)
-    }
+(** See {{:http://cyber.law.harvard.edu/rss/soapMeetsRss.html#rsscloudInterface} specification} *)
+type cloud = Rss_types.cloud =
+  {
+    cloud_domain : string ;
+    cloud_port : int ;
+    cloud_path : string ;
+    cloud_register_procedure : string ;
+    cloud_protocol : string ;
+  }
+
+type guid = Rss_types.guid = Guid_permalink of url | Guid_name of string
 
 type source = Rss_types.source =
-    {
-      src_name : string ;
-      src_url : url ;
-    }
+  {
+    src_name : string ;
+    src_url : url ;
+  }
 
 type item = Rss_types.item =
-    {
-      item_title : string option;
-      item_link : url option;
-      item_desc : string option;
-      item_pubdate : date option ;
-      item_author : email option ;
-      item_categories : category list ;
-      item_comments : url option ;
-      item_enclosure : enclosure option ;
-      item_guid : guid option ;
-      item_source : source option ;
-    }
+  {
+    item_title : string option ;
+    item_link : url option ;
+    item_desc : string option ;
+    item_pubdate : Netdate.t option ;
+    item_author : email option ;
+    item_categories : category list ;
+    item_comments : url option ;
+    item_enclosure : enclosure option ;
+    item_guid : guid option ;
+    item_source : source option ;
+  }
 
 type channel = Rss_types.channel =
-    {
-      ch_title : string ;
-      ch_link : url ;
-      ch_desc : string ;
-      ch_language : string option ;
-      ch_copyright : string option ;
-      ch_managing_editor : email option ;
-      ch_webmaster : email option ;
-      ch_pubdate : date option ;
-      ch_last_build_date : date option ;
-      ch_categories : category list ;
-      ch_generator : string option ;
-      ch_docs : url option ;
-      ch_ttl : int option ;
-      ch_image : image option ;
-      ch_text_input : text_input option ;
-      ch_items : item list ;
+  {
+    ch_title : string ;
+    ch_link : url ;
+    ch_desc : string ;
+    ch_language : string option ;
+    ch_copyright : string option ;
+    ch_managing_editor : email option ;
+    ch_webmaster : email option ;
+    ch_pubdate : Netdate.t option ;
+    ch_last_build_date : Netdate.t option ;
+    ch_categories : category list ;
+    ch_generator : string option ;
+    ch_cloud : cloud option ;
+    ch_docs : url option ;
+    ch_ttl : int option ;
+    ch_image : image option ;
+    ch_rating : pics_rating option ;
+    ch_text_input : text_input option ;
+    ch_skip_hours : skip_hours option ;
+    ch_skip_days : skip_days option ;
+    ch_items : item list ;
     }
+
 
 let item ?title
     ?link
@@ -150,10 +157,14 @@ let channel ~title ~link ~desc
     ?last_build_date
     ?(cats=[])
     ?generator
+    ?cloud
     ?docs
     ?ttl
     ?image
+    ?rating
     ?text_input
+    ?skip_hours
+    ?skip_days
     items
     =
   {
@@ -168,10 +179,14 @@ let channel ~title ~link ~desc
     ch_last_build_date = last_build_date ;
     ch_categories = cats ;
     ch_generator = generator ;
+    ch_cloud = cloud ;
     ch_docs = docs ;
     ch_ttl = ttl ;
     ch_image = image ;
+    ch_rating = rating ;
     ch_text_input = text_input ;
+    ch_skip_hours = skip_hours ;
+    ch_skip_days = skip_days ;
     ch_items = items ;
   }
 
@@ -190,8 +205,8 @@ let sort_items_by_date =
        | None, Some _ -> 1
        | Some d1, Some d2 ->
            compare
-             (Rss_date.since_epoch d2)
-             (Rss_date.since_epoch d2)
+             (Netdate.since_epoch d2)
+             (Netdate.since_epoch d2)
     );;
 
 let merge_channels c1 c2 =
@@ -200,7 +215,9 @@ let merge_channels c1 c2 =
   { c with ch_items = items }
 ;;
 
+type opts = Rss_io.opts
 
+let make_opts = Rss_io.make_opts
 
 let channel_of_file = Rss_io.channel_of_file
 let channel_of_string = Rss_io.channel_of_string

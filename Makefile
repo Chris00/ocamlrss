@@ -41,7 +41,6 @@ byte: rss.cma
 opt: rss.cmxa
 
 CMOFILES= \
-	rss_date.cmo \
 	rss_types.cmo \
 	rss_io.cmo \
 	rss.cmo

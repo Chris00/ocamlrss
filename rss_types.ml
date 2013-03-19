@@ -23,7 +23,12 @@
 (*                                                                            *)
 (******************************************************************************)
 
+(** *)
+
 type email = string (** can be, for example: foo@bar.com (Mr Foo Bar) *)
+type pics_rating = string
+type skip_hours = int list (** 0 .. 23 *)
+type skip_days = int list (** 0 is Sunday, 1 is Monday, ... *)
 
 type url = Neturl.url
 
@@ -66,11 +71,6 @@ type cloud = {
     cloud_register_procedure : string ;
     cloud_protocol : string ;
   }
-
-type pics_rating = string
-
-type skip_hours = int list
-type skip_days = int list (** 0 is Sunday, 1 is Monday, ... *)
 
 type guid = Guid_permalink of url | Guid_name of string
 

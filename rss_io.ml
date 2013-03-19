@@ -115,7 +115,7 @@ let get_att ?ctx ?(required=true) atts name =
           None -> raise Not_found
         | Some (opts, tag) ->
           let msg = Printf.sprintf "Attribute %S not found in tag %S" name tag in
-          add_error opts;
+          add_error opts msg;
           raise Not_found
       else
         ""
@@ -363,6 +363,17 @@ let int_of_day = function
 | "saturday" -> 6
 | s -> failwith (Printf.sprintf "Invalid day %S" s)
 
+let day_of_int = function
+  0 -> "Sunday"
+| 1 -> "Monday"
+| 2 -> "Tuesday"
+| 3 -> "Wednesday"
+| 4 -> "Thursday"
+| 5 -> "Friday"
+| 6 -> "Saturday"
+| n -> failwith ("Invalid day "^(string_of_int n))
+;;
+
 let get_skip_days opts xmls =
   let f_day acc = function
     E ((("", "day"), _), [D day]) ->
@@ -543,7 +554,7 @@ let xml_of_category c =
   let atts =
     match c.cat_domain with
       None -> []
-    | Some d -> [("","domain"), d]
+    | Some d -> [("","domain"), Neturl.string_of_url d]
   in
   E ((("","category"), atts), [D c.cat_name])
 
@@ -557,7 +568,7 @@ let xmls_of_opt_f f v_opt =
 let xml_of_enclosure e =
   E ((("","enclosure"),
 	   [
-	     ("","url"), e.encl_url ;
+	     ("","url"), Neturl.string_of_url e.encl_url ;
 	     ("","length"), string_of_int e.encl_length ;
 	     ("","type"), e.encl_type ;
 	   ]),
@@ -568,16 +579,18 @@ let xmls_of_enclosure_opt =
   xmls_of_opt_f xml_of_enclosure
 
 
-let xml_of_guid g =
-  E ((("","guid"),
-    [("","isPermaLink"), (if g.guid_permalink then "true" else "false") ]),
-	   [D g.guid_name]
-	  )
+let xml_of_guid = function
+  Guid_permalink url ->
+    E ((("","guid"), [("","isPermaLink"), "true"]),
+     [D (Neturl.string_of_url url)]
+    )
+| Guid_name name ->
+    E ((("","guid"), []), [D name])
 
 let xmls_of_guid_opt = xmls_of_opt_f xml_of_guid
 
 let xml_of_source s =
-  E ((("", "source"), [("","url"), s.src_url]),
+  E ((("", "source"), [("","url"), (Neturl.string_of_url s.src_url)]),
 	   [D s.src_name]
 	  )
 
@@ -585,9 +598,9 @@ let xmls_of_source_opt = xmls_of_opt_f xml_of_source
 
 let xml_of_image i =
   E ((("", "image"), []),
-	   [ E((("","url"),[]), [D i.image_url]) ;
+	   [ E((("","url"),[]), [D (Neturl.string_of_url i.image_url)]) ;
 	     E((("","title"),[]), [D i.image_title]) ;
-	     E((("","link"),[]), [D i.image_link])
+	     E((("","link"),[]), [D (Neturl.string_of_url i.image_link)])
 	   ] @
     (List.flatten
      [ opt_element
@@ -603,13 +616,48 @@ let xml_of_image i =
 
 let xmls_of_image_opt = xmls_of_opt_f xml_of_image
 
+let xml_of_cloud c =
+  let atts = [
+      ("","domain"), c.cloud_domain ;
+      ("","port"), string_of_int c.cloud_port ;
+      ("","path"), c.cloud_path ;
+      ("","registerProcedure"), c.cloud_register_procedure ;
+      ("","protocol"), c.cloud_protocol ;
+    ]
+  in
+  E ((("", "cloud"), atts), [])
+
+let xmls_of_cloud_opt = xmls_of_opt_f xml_of_cloud
+
+let xml_of_skip_hours =
+  let f h =
+    E ((("","hour"), []), [D (string_of_int h)])
+  in
+  fun hours ->
+    E ((("","hours"), []), List.map f hours)
+;;
+
+let xmls_of_skip_hours_opt = xmls_of_opt_f xml_of_skip_hours
+
+let xml_of_skip_days =
+  let f day =
+    let s = day_of_int day in
+    E ((("","day"), []), [D s])
+  in
+  fun days ->
+    E ((("","days"), []), List.map f days)
+;;
+
+let xmls_of_skip_days_opt = xmls_of_opt_f xml_of_skip_days
+
+
 let xml_of_text_input t =
   E ((("","textInput"), []),
 	   [
 	     E((("","title"), []), [D t.ti_title]) ;
 	     E((("","description"),[]), [D t.ti_desc]) ;
 	     E((("","name"), []), [D t.ti_name]) ;
-	     E((("","link"), []), [D t.ti_link]) ;
+	     E((("","link"), []), [D (Neturl.string_of_url t.ti_link)]) ;
 	   ]
 	  )
 
@@ -619,18 +667,18 @@ let xml_of_item ~date_fmt i =
   E ((("","item"), []),
    (List.flatten
     [ opt_element i.item_title "title" ;
-      opt_element i.item_link "link" ;
+      opt_element (apply_opt Neturl.string_of_url i.item_link) "link" ;
       opt_element i.item_desc "description" ;
       opt_element
-      (match i.item_pubdate with
-         None -> None
-       | Some d ->
-           err_date d;
-           Some (Rss_date.format ~fmt: date_fmt d))
-      "pubDate" ;
+        (match i.item_pubdate with
+           None -> None
+         | Some d ->
+             err_date d;
+             Some (Netdate.format ~fmt: date_fmt d))
+        "pubDate" ;
       opt_element i.item_author "author" ;
       xmls_of_categories i.item_categories ;
-      opt_element i.item_comments "comments" ;
+      opt_element (apply_opt Neturl.string_of_url i.item_comments) "comments" ;
       xmls_of_enclosure_opt i.item_enclosure ;
       xmls_of_guid_opt i.item_guid ;
       xmls_of_source_opt i.item_source ;
@@ -644,40 +692,44 @@ let xml_of_channel ~date_fmt ch =
     E ((("","channel"), []),
      (
       [ f ch.ch_title "title" ;
-        f ch.ch_link "link" ;
+        f (Neturl.string_of_url ch.ch_link) "link" ;
         f ch.ch_desc "description" ;
       ] @
-	      (List.flatten
-       [ opt_element ch.ch_language "language" ;
-         opt_element ch.ch_copyright "copyright" ;
-         opt_element ch.ch_managing_editor "managingEditor" ;
-         opt_element ch.ch_webmaster "webMaster" ;
-         opt_element
-         (match ch.ch_pubdate with
-            None -> None
-          | Some d ->
-              err_date d ;
-              Some (Rss_date.format ~fmt: date_fmt d)
-         )
-         "pubDate" ;
-         opt_element
-         (match ch.ch_last_build_date with
-            None -> None
-          | Some d ->
-              err_date d ;
-              Some (Rss_date.format ~fmt: date_fmt d))
-         "lastBuildDate" ;
-         xmls_of_categories ch.ch_categories ;
-         opt_element ch.ch_generator "generator" ;
-         opt_element ch.ch_docs "docs" ;
-         opt_element
-         (apply_opt string_of_int ch.ch_ttl)
-         "ttl";
-         xmls_of_image_opt ch.ch_image ;
-         xmls_of_text_input_opt ch.ch_text_input ;
-         List.map (xml_of_item ~date_fmt) ch.ch_items ;
-       ]
-      )
+        (List.flatten
+         [ opt_element ch.ch_language "language" ;
+           opt_element ch.ch_copyright "copyright" ;
+           opt_element ch.ch_managing_editor "managingEditor" ;
+           opt_element ch.ch_webmaster "webMaster" ;
+           opt_element
+             (match ch.ch_pubdate with
+                None -> None
+              | Some d ->
+                  err_date d ;
+                  Some (Netdate.format ~fmt: date_fmt d)
+             )
+             "pubDate" ;
+           opt_element
+             (match ch.ch_last_build_date with
+                None -> None
+              | Some d ->
+                  err_date d ;
+                  Some (Netdate.format ~fmt: date_fmt d))
+             "lastBuildDate" ;
+           xmls_of_categories ch.ch_categories ;
+           opt_element ch.ch_generator "generator" ;
+           xmls_of_cloud_opt ch.ch_cloud ;
+           opt_element (apply_opt Neturl.string_of_url ch.ch_docs) "docs" ;
+           opt_element
+             (apply_opt string_of_int ch.ch_ttl)
+             "ttl";
+           xmls_of_image_opt ch.ch_image ;
+           opt_element ch.ch_rating "rating" ;
+           xmls_of_text_input_opt ch.ch_text_input ;
+           xmls_of_skip_hours_opt ch.ch_skip_hours ;
+           xmls_of_skip_days_opt ch.ch_skip_days ;
+           List.map (xml_of_item ~date_fmt) ch.ch_items ;
+         ]
+        )
      )
     )
   in
@@ -688,3 +740,4 @@ let print_channel ?(date_fmt=default_date_format) ?(encoding="ISO-8859-1")fmt ch
   let xml = xml_of_channel ~date_fmt ch in
   Format.fprintf fmt "<?xml version=\"1.0\" encoding=\"%s\" ?>\n" encoding;
   Format.fprintf fmt "%s" (string_of_xml xml )
+
