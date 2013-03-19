@@ -212,7 +212,7 @@ val item :
   ?data: 'a ->
   unit ->
   'a item_t
-(** [item()] creates a new item with all find set to [None].  Use the
+(** [item()] creates a new item with all fields set to [None].  Use the
     optional parameters to set fields. *)
 
 val channel :
