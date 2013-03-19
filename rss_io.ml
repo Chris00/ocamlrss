@@ -108,7 +108,7 @@ let url_of_string opts s =
 
 let get_att ?ctx ?(required=true) atts name =
   let name = String.lowercase name in
-  try snd (List.find (fun ((_,s),_) -> String.lowercase s = name) atts)
+  try snd (List.find (function (("",s),_) -> String.lowercase s = name | _ -> false) atts)
   with Not_found ->
       if required then
         match ctx with
@@ -124,7 +124,7 @@ let get_opt_att atts name =
   let name = String.lowercase name in
   try Some
     (snd (List.find
-      (fun ((_,s), _) -> String.lowercase s = name)
+      (function (("",s), _) -> String.lowercase s = name | _ -> false)
         atts)
     )
   with Not_found ->
