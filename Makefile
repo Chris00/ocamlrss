@@ -26,7 +26,7 @@
 #
 VERSION=2.0
 
-PACKAGES=xmlm,unix
+PACKAGES=xmlm,netstring,unix
 
 OF_FLAGS=-package $(PACKAGES)
 OCAMLFIND=ocamlfind
@@ -79,7 +79,7 @@ test: rsstest
 
 # installation :
 ################
-install: 
+install:
 	$(OCAMLFIND) install rss META LICENSE $(wildcard rss.cmi rss.cma rss.cmxa rss.a rss.cmxs rss.mli rss.cmx)
 
 uninstall:

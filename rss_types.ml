@@ -25,7 +25,7 @@
 
 type email = string (** can be, for example: foo@bar.com (Mr Foo Bar) *)
 
-type url = string
+type url = Neturl.url
 
 type category =
     {
@@ -48,7 +48,7 @@ type text_input =
       ti_title : string ; (** The label of the Submit button in the text input area. *)
       ti_desc : string ; (** Explains the text input area. *)
       ti_name : string ; (** The name of the text object in the text input area. *)
-      ti_link : string ; (** The URL of the CGI script that processes text input requests. *)
+      ti_link : url ; (** The URL of the CGI script that processes text input requests. *)
     }
 
 type enclosure =
@@ -58,23 +58,21 @@ type enclosure =
       encl_type : string ; (** MIME type *)
     }
 
-type cloud = int (* A VOIR *)
-(* <cloud domain="radio.xmlstoragesystem.com"
-   port="80"
-   path="/RPC2"
-   registerProcedure="xmlStorageSystem.rssPleaseNotify"
-   protocol="xml-rpc" />
- *)
+(** See {{:http://cyber.law.harvard.edu/rss/soapMeetsRss.html#rsscloudInterface} specification} *)
+type cloud = {
+    cloud_domain : string ;
+    cloud_port : int ;
+    cloud_path : string ;
+    cloud_register_procedure : string ;
+    cloud_protocol : string ;
+  }
 
-type pics_rating = int (* A VOIR *)
-type skip_hours = int (* A VOIR *)
-type skip_days = int (* A VOIR *)
+type pics_rating = string
 
-type guid =
-    {
-      guid_name : string ; (** can be a permanent url, if permalink is true *)
-      guid_permalink : bool ; (** default is true when no value was specified *)
-    }
+type skip_hours = int list
+type skip_days = int list (** 0 is Sunday, 1 is Monday, ... *)
+
+type guid = Guid_permalink of url | Guid_name of string
 
 type source =
     {
@@ -87,7 +85,7 @@ type item =
       item_title : string option ;
       item_link : url option ;
       item_desc : string option ;
-      item_pubdate : Rss_date.t option ;
+      item_pubdate : Netdate.t option ;
       item_author : email option ;
       item_categories : category list ;
       item_comments : url option ;
@@ -105,19 +103,17 @@ type channel =
       ch_copyright : string option ;
       ch_managing_editor : email option ;
       ch_webmaster : email option ;
-      ch_pubdate : Rss_date.t option ;
-      ch_last_build_date : Rss_date.t option ;
+      ch_pubdate : Netdate.t option ;
+      ch_last_build_date : Netdate.t option ;
       ch_categories : category list ;
       ch_generator : string option ;
-(*      ch_cloud : cloud option ; *)
+      ch_cloud : cloud option ;
       ch_docs : url option ;
       ch_ttl : int option ;
       ch_image : image option ;
-(*      ch_rating : pics_rating option ; *)
+      ch_rating : pics_rating option ;
       ch_text_input : text_input option ;
-(*
       ch_skip_hours : skip_hours option ;
       ch_skip_days : skip_days option ;
-*)
       ch_items : item list ;
     }

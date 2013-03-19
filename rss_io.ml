@@ -77,6 +77,16 @@ let xml_of_source source =
 
 (** {2 Parsing} *)
 
+type opts =
+  { schemes : (string, Neturl.url_syntax) Hashtbl.t ;
+    base_syntax : Neturl.url_syntax ;
+    mutable errors : string list ;
+  }
+let add_error opts msg = opts.errors <- msg :: opts.errors;;
+
+exception Error of string;;
+let error msg = raise (Error msg);;
+
 let find_ele name e =
     match e with
       E ((("",e),_),_) when name = String.lowercase e -> true
@@ -86,205 +96,343 @@ let apply_opt f = function
     None -> None
   | Some v -> Some (f v)
 
-let get_att ?(required=true) atts name =
+let http_syntax = Hashtbl.find Neturl.common_url_syntax "http";;
+let url_of_string opts s =
+  try
+    Neturl.parse_url ~schemes: opts.schemes ~base_syntax: opts.base_syntax
+      ~accept_8bits: true ~enable_fragment: true
+      s
+  with Neturl.Malformed_URL ->
+      error (Printf.sprintf "Malformed url %S" s)
+
+
+let get_att ?ctx ?(required=true) atts name =
   let name = String.lowercase name in
   try snd (List.find (fun ((_,s),_) -> String.lowercase s = name) atts)
   with Not_found ->
-    if required then raise Not_found else ""
+      if required then
+        match ctx with
+          None -> raise Not_found
+        | Some (opts, tag) ->
+          let msg = Printf.sprintf "Attribute %S not found in tag %S" name tag in
+          add_error opts;
+          raise Not_found
+      else
+        ""
 
 let get_opt_att atts name =
   let name = String.lowercase name in
   try Some
-      (snd (List.find
-		 (fun ((_,s), _) -> String.lowercase s = name)
-		 atts)
-      )
+    (snd (List.find
+      (fun ((_,s), _) -> String.lowercase s = name)
+        atts)
+    )
   with Not_found ->
     None
 
-let get_source xmls =
+let get_source opts xmls =
   try
     match List.find (find_ele "source") xmls with
       E ((_,atts),[D s]) ->
         Some {
           src_name = s ;
-          src_url = get_att atts "url" ;
+          src_url = url_of_string opts (get_att atts "url") ;
         }
     | _ ->
         None
   with
-    Not_found ->
-      None
+  | Error msg -> add_error opts msg; None
+  | _ -> None
 
-let get_enclosure xmls =
+let get_enclosure opts xmls =
   try
     match List.find (find_ele "enclosure") xmls with
       E ((_,atts),_) ->
-	Some { encl_url = get_att atts "url" ;
-	       encl_length = int_of_string (get_att atts "length") ;
-	       encl_type = get_att atts "type" ;
-	     }
-    | _ ->
-	None
+        let ctx = (opts, "enclosure") in
+        Some {
+          encl_url = url_of_string opts (get_att ~ctx atts "url") ;
+          encl_length = int_of_string (get_att ~ctx atts "length") ;
+          encl_type = get_att ~ctx atts "type" ;
+        }
+    | D _ -> assert false
   with
-    _ ->
-      None
+  | Error msg -> add_error opts msg; None
+  | _ -> None
 
-let get_categories xmls =
+let get_categories opts xmls =
   let f acc = function
-    E ((("",tag),atts),[D s])
-    when String.lowercase tag = "category"->
-      { cat_name = s ;
-        cat_domain = get_opt_att atts "domain" ;
-      } :: acc
+    E ((("",tag),atts),[D s]) when String.lowercase tag = "category"->
+      begin
+        try
+          { cat_name = s ;
+            cat_domain = apply_opt (url_of_string opts) (get_opt_att atts "domain") ;
+          } :: acc
+        with
+          Error msg ->
+            add_error opts msg;
+            acc
+      end
   | _ -> acc
   in
   List.rev (List.fold_left f [] xmls)
 
-let get_guid xmls =
-   try
+let get_guid opts xmls =
+  try
     match List.find (find_ele "guid") xmls with
-      E ((_,atts),[D s]) ->
-	Some { guid_name = s ;
-	       guid_permalink =
-	         (get_att ~required: false atts "ispermalink") <> "false" ;
-	     }
-    | _ ->
-	None
+      E ((_,atts), [D s]) ->
+        let x =
+          match get_att ~required: false atts "ispermalink" with
+            "true" -> Guid_permalink (url_of_string opts s)
+          | _ -> Guid_name s
+        in
+        Some x
+    | _ -> None
   with
-    Not_found ->
-      None
+  | Error msg -> add_error opts msg; None
+  | _ -> None
 
-let get_image xmls =
+let get_cloud opts xmls =
+  try
+    match List.find (find_ele "cloud") xmls with
+      E ((_,atts), _) ->
+        let get = get_att ~ctx: (opts, "cloud") atts in
+        let port =
+          let port = get "port" in
+          try int_of_string port
+          with _ -> error (Printf.sprintf "Invalid cloud port %S" port)
+        in
+        Some
+          { cloud_domain = get "domain" ;
+            cloud_port = port ;
+            cloud_path = get "path" ;
+            cloud_register_procedure = get "registerprocedure" ;
+            cloud_protocol = get "protocol" ;
+          }
+    | D _ -> assert false
+  with
+  | Error msg -> add_error opts msg; None
+  | _ -> None
+
+
+let find_sub_cdata =
+  fun tag xmls name ->
+    try
+      match List.find (find_ele name) xmls with
+        E ((_,_),[D s]) -> s
+      | E ((_,_),[]) -> ""
+      |	_ ->
+          let msg = Printf.sprintf "Invalid contents for node %S under %S" name tag in
+          error msg
+    with
+      Not_found ->
+        let msg = Printf.sprintf "No node %S in node %S" name tag in
+        error msg
+
+let get_image opts xmls =
   try
     match List.find (find_ele "image") xmls with
       E ((_,atts),subs) ->
-	let f s =
-	  match List.find (find_ele s) subs with
-	    E ((_,_),[D s]) -> s
-	  |	_ -> raise Not_found
-	in
-	let f_opt s =
-	  try
-	    match List.find (find_ele s) subs with
-	      E ((_,_),[D s]) -> Some (f s)
-	    |	_ -> None
-	  with _ -> None
-	in
-	Some { image_url = f "url" ;
-	       image_title = f "title" ;
-	       image_link = f "link" ;
-	       image_width = apply_opt int_of_string (f_opt "width") ;
-	       image_height = apply_opt int_of_string (f_opt "height") ;
-	       image_desc = f_opt "description" ;
-	     }
-    | _ ->
-	None
+        let f = find_sub_cdata "image" xmls in
+        let f_opt s =
+          try
+            match List.find (find_ele s) subs with
+              E ((_,_),[D s]) -> Some (f s)
+            |	_ -> None
+          with _ -> None
+        in
+        Some {
+          image_url = url_of_string opts (f "url") ;
+          image_title = f "title" ;
+          image_link = url_of_string opts (f "link") ;
+          image_width = apply_opt int_of_string (f_opt "width") ;
+          image_height = apply_opt int_of_string (f_opt "height") ;
+          image_desc = f_opt "description" ;
+        }
+    | D _ ->
+        assert false
   with
-    _ ->
-      None
+  | Error msg -> add_error opts msg; None
+  | _ -> None
 
-let get_text_input xmls =
+let get_text_input opts xmls =
   try
     match List.find (find_ele "textinput") xmls with
       E ((_,atts),subs) ->
-	let f s =
-	  match List.find (find_ele s) subs with
-	    E ((_,_),[D s]) -> s
-	  |	_ -> raise Not_found
-	in
-	Some { ti_title = f "title" ;
-	       ti_desc = f "description" ;
-	       ti_name = f "name" ;
-	       ti_link = f "link" ;
-	     }
-    | _ ->
-	None
+        let f = find_sub_cdata "textInput" xmls in
+        Some {
+          ti_title = f "title" ;
+          ti_desc = f "description" ;
+          ti_name = f "name" ;
+          ti_link = url_of_string opts (f "link") ;
+        }
+    | D _ ->
+        assert false
   with
-    _ ->
-      None
+  | Error msg -> add_error opts msg; None
+  | _ -> None
 
-let item_of_xmls xmls =
-  let f s =
-    try
-      match List.find (find_ele s) xmls with
-	E ((_,_),[D s]) -> Some s
-      |	_ -> None
-    with Not_found -> None
+
+let item_of_xmls opts xmls =
+  let f_opt s =
+    try Some (find_sub_cdata "item" xmls s)
+    with _ -> None
   in
   let date =
-    match f "pubdate" with
+    match f_opt "pubdate" with
       None -> None
     | Some s ->
-	try Some (Rss_date.parse s)
-	with _ -> None
+        try Some (Netdate.parse s)
+        with _ ->
+            add_error opts (Printf.sprintf "Invalid date %S" s);
+            None
   in
-  { item_title = f "title" ;
-    item_link = f "link" ;
-    item_desc = f "description" ;
-    item_pubdate = date ;
-    item_author = f "author" ;
-    item_categories = get_categories xmls ;
-    item_comments = f "comments" ;
-    item_enclosure = get_enclosure xmls ;
-    item_guid = get_guid xmls ;
-    item_source = get_source xmls ;
-  }
+  try
+    let item =
+      {
+        item_title = f_opt "title" ;
+        item_link = apply_opt (url_of_string opts) (f_opt "link") ;
+        item_desc = f_opt "description" ;
+        item_pubdate = date ;
+        item_author = f_opt "author" ;
+        item_categories = get_categories opts xmls ;
+        item_comments = apply_opt (url_of_string opts) (f_opt "comments") ;
+        item_enclosure = get_enclosure opts xmls ;
+        item_guid = get_guid opts xmls ;
+        item_source = get_source opts xmls ;
+      }
+    in
+    Some item
+  with
+    Error msg ->
+      add_error opts msg ;
+      None
 
-let items_of_xmls xmls =
+let items_of_xmls opts xmls =
   List.rev
-  (List.fold_left
-   (fun acc e ->
-      match e with
-        D _ -> acc
-      |	E ((("",s),_),subs) when String.lowercase s = "item" ->
-	     (item_of_xmls subs) :: acc
-	 |	E _ -> acc
-       )
+    (List.fold_left
+     (fun acc e ->
+        match e with
+          D _ -> acc
+        |	E ((("",s),_),subs) when String.lowercase s = "item" ->
+            begin
+              match item_of_xmls opts subs with
+                None -> acc
+              | Some item -> item :: acc
+            end
+        |	E _ -> acc
+     )
        []
        xmls
     )
+let get_skip_hours opts xmls =
+  try
+    let f_hour acc = function
+      E ((("","hour"),_),[D s]) ->
+        begin
+          match
+            try
+              let h = int_of_string s in
+              if h < 0 || h > 23 then failwith "" ;
+              Some h
+            with _ ->
+                add_error opts (Printf.sprintf "Invalid hour %S" s);
+                None
+          with
+            None -> acc
+          | Some h -> h :: acc
+        end
+    | _ -> acc
+    in
+    match List.find (find_ele "skiphours") xmls with
+      E ((_,_),subs) ->
+        Some (List.sort Pervasives.compare (List.fold_left f_hour [] subs))
+    | D _ ->
+        assert false
+  with
+  | Error msg -> add_error opts msg; None
+  | _ -> None
+;;
 
-let channel_of_xmls xmls =
+let int_of_day = function
+  "sunday" -> 0
+| "monday" -> 1
+| "tuesday" -> 2
+| "wednesday" -> 3
+| "thursday" -> 4
+| "friday" -> 5
+| "saturday" -> 6
+| s -> failwith (Printf.sprintf "Invalid day %S" s)
+
+let get_skip_days opts xmls =
+  let f_day acc = function
+    E ((("", "day"), _), [D day]) ->
+      begin
+        try (int_of_day day) :: acc
+        with Failure msg ->
+            add_error opts msg;
+            acc
+      end
+  | _ -> acc
+  in
+  try
+    match List.find (find_ele "skipdays") xmls with
+      E ((_,_),subs) ->
+        Some (List.sort Pervasives.compare (List.fold_left f_day [] subs))
+    | D _ ->
+        assert false
+  with
+  | Error msg -> add_error opts msg; None
+  | _ -> None
+
+
+let channel_of_xmls opts xmls =
   let f s =
-    try
-      match List.find (find_ele s) xmls with
-        E ((_,_),[D s]) -> s
-      | E ((_,_),[]) -> ""
-      |	_ -> raise Not_found
-    with Not_found ->
-      failwith ("Parse error: no correct "^s)
+    try find_sub_cdata "channel" xmls s
+    with Error msg -> failwith msg
   in
   let f_opt s =
-    try
-      match List.find (find_ele s) xmls with
-        E ((_,_),[D s]) -> Some s
-      |	_ -> None
-    with Not_found -> None
+    try Some (f s)
+    with _ -> None
   in
   let pubdate =
     match f_opt "pubdate" with
       None -> None
     | Some s ->
-	try Some (Rss_date.parse s)
-	with _ -> None
+        try Some (Netdate.parse s)
+        with _ ->
+            add_error opts (Printf.sprintf "Invalid date %S" s);
+            None
   in
   let builddate =
     match f_opt "lastbuilddate" with
       None -> None
     | Some s ->
-	try Some (Rss_date.parse s)
-	with _ -> None
+        try Some (Netdate.parse s)
+        with _ ->
+            add_error opts (Printf.sprintf "Invalid date %S" s);
+            None
   in
   let ttl =
     match f_opt "ttl" with
       None -> None
     | Some s ->
-	try Some (int_of_string s)
-	with _ -> None
+        try Some (int_of_string s)
+        with _ ->
+            add_error opts (Printf.sprintf "Invalid ttl %S" s);
+            None
+  in
+  let link =
+    try url_of_string opts (f "link")
+    with Error msg -> failwith msg
+  in
+  let docs =
+    try apply_opt (url_of_string opts) (f_opt "docs")
+    with Error msg ->
+        add_error opts msg;
+        None
   in
   { ch_title = f "title" ;
-    ch_link = f "link" ;
+    ch_link = link ;
     ch_desc = f "description" ;
     ch_language = f_opt "language" ;
     ch_copyright = f_opt "copyright" ;
@@ -292,17 +440,22 @@ let channel_of_xmls xmls =
     ch_webmaster = f_opt "webmaster" ;
     ch_pubdate = pubdate ;
     ch_last_build_date = builddate ;
-    ch_categories = get_categories xmls ;
+    ch_categories = get_categories opts xmls ;
     ch_generator = f_opt "generator" ;
-    ch_docs = f_opt "docs" ;
+    ch_cloud = get_cloud opts xmls ;
+    ch_docs = docs ;
     ch_ttl = ttl ;
-    ch_image = get_image xmls ;
-    ch_text_input = get_text_input xmls ;
-    ch_items = items_of_xmls xmls ;
+    ch_image = get_image opts xmls ;
+    ch_rating = f_opt "rating" ;
+    ch_text_input = get_text_input opts xmls ;
+    ch_skip_hours = get_skip_hours opts xmls ;
+    ch_skip_days = get_skip_days opts xmls ;
+    ch_items = items_of_xmls opts xmls ;
   }
 
-let channel_of_source source =
+let channel_of_source opts source =
   let xml = xml_of_source source in
+  let opts = { opts with errors = [] } in
   match xml with
   | D _ -> failwith "Parse error: not an element"
   | E (((_,e), atts), subs) ->
@@ -312,7 +465,8 @@ let channel_of_source source =
            try
              let elt = List.find (find_ele "channel") subs in
              match elt with
-               E ((("",_), atts), subs) -> channel_of_xmls subs
+               E ((("",_), atts), subs) ->
+                 (channel_of_xmls opts subs, opts.errors)
              | _ -> assert false
            with
              Not_found -> failwith "Parse error: no channel"
@@ -325,7 +479,8 @@ let channel_of_source source =
            | (E ((("",e), atts), subs)) :: q ->
                (
                 match String.lowercase e with
-                  "channel" -> channel_of_xmls (subs @ q)
+                  "channel" ->
+                    (channel_of_xmls opts (subs @ q), opts.errors)
                 | _ -> failwith "Parse error: not channel"
                )
            | _ ->
@@ -334,20 +489,29 @@ let channel_of_source source =
       |	_ ->
           failwith "Parse error: not rss"
 
-let channel_of_string s =
-  channel_of_source (`String (0, s))
 
-let channel_of_file file =
+let make_opts
+  ?(schemes=Neturl.common_url_syntax)
+    ?(base_syntax=Hashtbl.find Neturl.common_url_syntax "http")
+    () =
+    { schemes ; base_syntax ; errors = [] }
+
+let default_opts = make_opts ();;
+
+let channel_of_string ?(opts=default_opts) s =
+  channel_of_source opts (`String (0, s))
+
+let channel_of_file ?(opts=default_opts) file =
   let ic = open_in file in
   try
-    channel_of_source (`Channel ic)
+    channel_of_source opts (`Channel ic)
   with
     e ->
       close_in ic;
       raise e
 ;;
 
-let channel_of_channel ch = channel_of_source (`Channel ch);;
+let channel_of_channel ?(opts=default_opts) ch = channel_of_source opts (`Channel ch);;
 
 (** {2 Printing} *)
 
