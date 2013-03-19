@@ -191,7 +191,6 @@ type ('a, 'b) channel_t =
     ch_data : 'a option ;
   }
 
-
 type item = unit item_t
 type channel = (unit, unit) channel_t
 
@@ -263,15 +262,26 @@ val merge_channels : channel -> channel -> channel
 
 (** {2 Reading channels} *)
 
+(** This represents XML trees. This XML trees are given to
+  functions provided to read additional data from RSS channels and items. *)
 type xmltree =
     E of Xmlm.tag * xmltree list
   | D of string
+
+(** Use this exception to indicate an error is functions given to [make_opts] used
+  to read additional data from prefixed XML nodes. *)
+exception Error of string
 
 (** Options used when reading source. *)
 type ('a, 'b) opts
 
 (** See Neturl documentation for [schemes] and [base_syntax] options.
-  They are used to parse URLs. *)
+  They are used to parse URLs.
+  @param read_channel_data provides a way to read additional information from the
+  subnodes of the channels. All these subnodes are prefixed by an expanded namespace.
+  @param read_item_data is the equivalent of [read_channel_data] parameter but
+  is called of each item with its prefixed subnodes.
+  *)
 val make_opts :
   ?schemes: (string, Neturl.url_syntax) Hashtbl.t ->
   ?base_syntax: Neturl.url_syntax ->
@@ -288,15 +298,22 @@ val channel_t_of_file : ('a, 'b) opts -> string -> (('a, 'b) channel_t * string 
 val channel_t_of_string : ('a, 'b) opts -> string -> (('a, 'b) channel_t * string list)
 val channel_t_of_channel : ('a, 'b) opts -> in_channel -> (('a, 'b) channel_t * string list)
 
-
 val channel_of_file : string -> (channel * string list)
 val channel_of_string : string -> (channel * string list)
 val channel_of_channel : in_channel -> (channel * string list)
 
 (** {2 Writing channels} *)
 
-val print_channel : ?indent: int -> ?date_fmt: string -> ?encoding: string ->
-                    Format.formatter -> channel -> unit
+type 'a data_printer = 'a -> xmltree list
 
-val print_file : ?indent: int -> ?date_fmt: string -> ?encoding: string ->
-                 string -> channel -> unit
+val print_channel :
+  ?channel_data_printer: 'a data_printer ->
+  ?item_data_printer: 'b data_printer ->
+  ?indent: int -> ?date_fmt: string -> ?encoding: string ->
+    Format.formatter -> ('a, 'b) channel_t -> unit
+
+val print_file :
+  ?channel_data_printer: 'a data_printer ->
+  ?item_data_printer: 'b data_printer ->
+    ?indent: int -> ?date_fmt: string -> ?encoding: string ->
+    string -> ('a, 'b) channel_t -> unit

@@ -698,7 +698,13 @@ let xml_of_text_input t =
 
 let xmls_of_text_input_opt = xmls_of_opt_f xml_of_text_input
 
-let xml_of_item ~date_fmt i =
+let xml_of_item ?item_data_printer ~date_fmt i =
+  let data_xml =
+    match i.item_data, item_data_printer with
+      None, _
+    | _, None -> []
+    | Some data, Some p -> p data
+  in
   E ((("","item"), []),
    (List.flatten
     [ opt_element i.item_title "title" ;
@@ -717,12 +723,19 @@ let xml_of_item ~date_fmt i =
       xmls_of_enclosure_opt i.item_enclosure ;
       xmls_of_guid_opt i.item_guid ;
       xmls_of_source_opt i.item_source ;
+      data_xml ;
     ]
    )
 	  )
 
-let xml_of_channel ~date_fmt ch =
+let xml_of_channel ?channel_data_printer ?item_data_printer ~date_fmt ch =
   let f v s = E ((("",s), []), [D v]) in
+  let data_xml =
+    match ch.ch_data, channel_data_printer with
+      None, _
+    | _, None -> []
+    | Some data, Some p -> p data
+  in
   let xml_ch =
     E ((("","channel"), []),
      (
@@ -762,7 +775,8 @@ let xml_of_channel ~date_fmt ch =
            xmls_of_text_input_opt ch.ch_text_input ;
            xmls_of_skip_hours_opt ch.ch_skip_hours ;
            xmls_of_skip_days_opt ch.ch_skip_days ;
-           List.map (xml_of_item ~date_fmt) ch.ch_items ;
+           data_xml ;
+           List.map (xml_of_item ?item_data_printer ~date_fmt) ch.ch_items ;
          ]
         )
      )
@@ -771,8 +785,9 @@ let xml_of_channel ~date_fmt ch =
   E ((("","rss"), [("","version"), "2.0"]), [xml_ch])
 
 
-let print_channel ?indent ?(date_fmt=default_date_format) ?(encoding="UTF-8")fmt ch =
-  let xml = xml_of_channel ~date_fmt ch in
+let print_channel ?channel_data_printer ?item_data_printer ?indent
+  ?(date_fmt=default_date_format) ?(encoding="UTF-8")fmt ch =
+  let xml = xml_of_channel ?channel_data_printer ?item_data_printer ~date_fmt ch in
   Format.fprintf fmt "<?xml version=\"1.0\" encoding=\"%s\" ?>\n" encoding;
   Format.fprintf fmt "%s" (string_of_xml ?indent xml )
 

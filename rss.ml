@@ -227,6 +227,8 @@ type xmltree = Rss_io.xmltree =
     E of Xmlm.tag * xmltree list
   | D of string
 
+exception Error = Rss_io.Error
+
 type ('a, 'b) opts = ('a, 'b) Rss_io.opts
 
 let make_opts = Rss_io.make_opts
@@ -240,12 +242,14 @@ let channel_of_file = Rss_io.channel_of_file default_opts
 let channel_of_string = Rss_io.channel_of_string default_opts
 let channel_of_channel = Rss_io.channel_of_channel default_opts
 
+type 'a data_printer = 'a -> xmltree list
+
 let print_channel = Rss_io.print_channel
 
-let print_file ?indent ?date_fmt ?encoding file ch =
+let print_file ?channel_data_printer ?item_data_printer ?indent ?date_fmt ?encoding file ch =
   let oc = open_out file in
   let fmt = Format.formatter_of_out_channel oc in
-  print_channel ?indent ?date_fmt ?encoding fmt ch;
+  print_channel ?channel_data_printer ?item_data_printer ?indent ?date_fmt ?encoding fmt ch;
   Format.pp_print_flush fmt ();
   close_out oc
 
