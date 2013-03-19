@@ -148,6 +148,9 @@ type 'a item_t =
     (** Additional data, since RSS can be extended with namespace-prefixed nodes.*)
   }
 
+(** A namespace is a pair (name, url). *)
+type namespace = string * string
+
 type ('a, 'b) channel_t =
   {
     ch_title : string ;
@@ -191,6 +194,7 @@ type ('a, 'b) channel_t =
     ch_items : 'b item_t list ;
     ch_data : 'a option ;
         (** Additional data, since RSS can be extended with namespace-prefixed nodes.*)
+    ch_namespaces : namespace list ;
   }
 
 type item = unit item_t
@@ -236,6 +240,7 @@ val channel :
   ?skip_hours: skip_hours ->
   ?skip_days: skip_days ->
   ?data: 'a ->
+  ?namespaces: namespace list ->
   'b item_t list ->
   ('a, 'b) channel_t
 
@@ -294,6 +299,7 @@ val make_opts :
 val default_opts : (unit, unit) opts
 
 (** [channel_[t_]of_X] returns the parsed channel and a list of encountered errors.
+  Note that only namespaces declared in the root not of the XML tree are added to [ch_namespaces] field.
   @raise Failure if the channel could not be parsed.
 *)
 val channel_t_of_file : ('a, 'b) opts -> string -> (('a, 'b) channel_t * string list)

@@ -100,6 +100,8 @@ type 'a item_t = 'a Rss_types.item_t =
     item_data : 'a option ;
   }
 
+type namespace = (string * string)
+
 type ('a, 'b) channel_t = ('a, 'b) Rss_types.channel_t =
   {
     ch_title : string ;
@@ -123,6 +125,7 @@ type ('a, 'b) channel_t = ('a, 'b) Rss_types.channel_t =
     ch_skip_days : skip_days option ;
     ch_items : 'b item_t list ;
     ch_data : 'a option ;
+    ch_namespaces : namespace list ;
     }
 
 type item = unit item_t
@@ -172,6 +175,7 @@ let channel ~title ~link ~desc
     ?skip_hours
     ?skip_days
     ?data
+    ?(namespaces=[])
     items
     =
   {
@@ -196,6 +200,7 @@ let channel ~title ~link ~desc
     ch_skip_days = skip_days ;
     ch_items = items ;
     ch_data = data ;
+    ch_namespaces = namespaces ;
   }
 
 let copy_item i = { i with item_title = i.item_title };;

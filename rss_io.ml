@@ -32,10 +32,10 @@ type xmltree =
     E of Xmlm.tag * xmltree list
   | D of string
 
-let string_of_xml ?indent tree =
+let string_of_xml ?ns_prefix ?indent tree =
   try
     let b = Buffer.create 256 in
-    let output = Xmlm.make_output ~indent ~decl: false (`Buffer b) in
+    let output = Xmlm.make_output ?ns_prefix ~indent ~decl: false (`Buffer b) in
     let frag = function
     | E (tag, childs) -> `El (tag, childs)
     | D d -> `Data d
@@ -493,6 +493,7 @@ let channel_of_xmls opts xmls =
     ch_skip_days = get_skip_days opts xmls ;
     ch_items = items_of_xmls opts xmls ;
     ch_data = data ;
+    ch_namespaces = [] ;
   }
 
 let channel_of_source opts source =
@@ -501,36 +502,47 @@ let channel_of_source opts source =
   match xml with
   | D _ -> failwith "Parse error: not an element"
   | E (((_,e), atts), subs) ->
-      match String.lowercase e with
-        "rss" ->
-          (
-           try
-             let elt = List.find (find_ele "channel") subs in
-             match elt with
-               E ((("",_), atts), subs) ->
-                 (channel_of_xmls opts subs, opts.errors)
-             | _ -> assert false
-           with
-             Not_found -> failwith "Parse error: no channel"
-          )
+      let (channel, errors) =
+        match String.lowercase e with
+          "rss" ->
+            (
+             try
+               let elt = List.find (find_ele "channel") subs in
+               match elt with
+                 E ((("",_), atts), subs) ->
+                   (channel_of_xmls opts subs, opts.errors)
+               | _ -> assert false
+             with
+               Not_found -> failwith "Parse error: no channel"
+            )
       |	"rdf:rdf" ->
-          (
-           match subs with
-           | [] ->
-               failwith "Parse error: no channel"
-           | (E ((("",e), atts), subs)) :: q ->
-               (
-                match String.lowercase e with
-                  "channel" ->
-                    (channel_of_xmls opts (subs @ q), opts.errors)
-                | _ -> failwith "Parse error: not channel"
-               )
-           | _ ->
-               failwith "Parse error: not channel"
-          )
-      |	_ ->
-          failwith "Parse error: not rss"
-
+            (
+             match subs with
+             | [] ->
+                 failwith "Parse error: no channel"
+             | (E ((("",e), atts), subs)) :: q ->
+                 (
+                  match String.lowercase e with
+                    "channel" ->
+                      (channel_of_xmls opts (subs @ q), opts.errors)
+                  | _ -> failwith "Parse error: not channel"
+                 )
+             | _ ->
+                 failwith "Parse error: not channel"
+            )
+        |	_ ->
+            failwith "Parse error: not rss"
+      in
+      let namespaces =
+         let f ((prefix, name), value) acc =
+           if prefix = Xmlm.ns_xmlns then
+             (name, value) :: acc
+          else
+            acc
+         in
+         List.fold_right f atts []
+      in
+      ({ channel with ch_namespaces = namespaces }, errors)
 
 let make_opts
   ?(schemes=Neturl.common_url_syntax)
@@ -785,9 +797,27 @@ let xml_of_channel ?channel_data_printer ?item_data_printer ~date_fmt ch =
   E ((("","rss"), [("","version"), "2.0"]), [xml_ch])
 
 
+module SMap = Map.Make (struct type t = string let compare = Pervasives.compare end);;
+
 let print_channel ?channel_data_printer ?item_data_printer ?indent
   ?(date_fmt=default_date_format) ?(encoding="UTF-8")fmt ch =
   let xml = xml_of_channel ?channel_data_printer ?item_data_printer ~date_fmt ch in
+  let known_ns =
+    List.fold_left (fun map (name, url) -> SMap.add url name map)
+      SMap.empty ch.ch_namespaces
+  in
+  let ns_prefix url =
+    try Some (SMap.find url known_ns)
+    with Not_found -> None
+  in
+  let xml =
+    match xml with
+      D _ -> assert false
+    | E ((tag, atts), subs) ->
+        let f acc (name, url) = ((Xmlm.ns_xmlns, name), url) :: acc in
+        let atts = List.rev (List.fold_left f atts ch.ch_namespaces) in
+        E ((tag, atts), subs)
+  in
   Format.fprintf fmt "<?xml version=\"1.0\" encoding=\"%s\" ?>\n" encoding;
-  Format.fprintf fmt "%s" (string_of_xml ?indent xml )
+  Format.fprintf fmt "%s" (string_of_xml ~ns_prefix ?indent xml )
 

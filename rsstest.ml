@@ -31,8 +31,17 @@ let main () =
   if Array.length Sys.argv < 2 then
     fatal (Printf.sprintf "Usage: %s <rss file>" Sys.argv.(0));
   try
-    let (channel, errors) = Rss.channel_of_file Sys.argv.(1) in
-    Rss.print_channel ~indent: 2 Format.std_formatter channel;
+    let opts = Rss.make_opts
+      ~read_channel_data: (fun x -> Some x)
+      ~read_item_data: (fun x -> Some x)
+      ()
+    in
+    let (channel, errors) = Rss.channel_t_of_file opts Sys.argv.(1) in
+    let printer xmls = xmls in
+    Rss.print_channel
+      ~channel_data_printer: printer
+      ~item_data_printer: printer
+      ~indent: 2 Format.std_formatter channel;
     List.iter prerr_endline errors
   with
     | Sys_error s | Failure s -> fatal s

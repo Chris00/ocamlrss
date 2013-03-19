@@ -120,6 +120,7 @@ type ('a, 'b) channel_t =
       ch_skip_days : skip_days option ;
       ch_items : 'b item_t list ;
       ch_data : 'a option ;
+      ch_namespaces : (string * string) list ;
     }
 
 type item = unit item_t
