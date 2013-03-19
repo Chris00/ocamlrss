@@ -96,7 +96,6 @@ let apply_opt f = function
     None -> None
   | Some v -> Some (f v)
 
-let http_syntax = Hashtbl.find Neturl.common_url_syntax "http";;
 let url_of_string opts s =
   try
     Neturl.parse_url ~schemes: opts.schemes ~base_syntax: opts.base_syntax
@@ -104,7 +103,6 @@ let url_of_string opts s =
       s
   with Neturl.Malformed_URL ->
       error (Printf.sprintf "Malformed url %S" s)
-
 
 let get_att ?ctx ?(required=true) atts name =
   let name = String.lowercase name in
