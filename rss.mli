@@ -47,11 +47,11 @@ val string_of_date : ?fmt: string -> date -> string
     conversion specifications and ordinary characters.  All ordinary
     characters are kept as such in the final string.  A conversion
     specification consists of the '%' character and one other
-    character.  See {!Rss_date.format_to} for more details.
+    character.  See [Netdate.format_to] for more details.
     Default: ["%d %b %Y"].
  *)
 
-type email = string (** can be, for example: foo@bar.com (Mr Foo Bar) *)
+type email = string (** can be, for example: foo\@bar.com (Mr Foo Bar) *)
 type pics_rating = string
 type skip_hours = int list (** 0 .. 23 *)
 type skip_days = int list (** 0 is Sunday, 1 is Monday, ... *)
@@ -145,6 +145,7 @@ type 'a item_t =
     (** A globally unique identifier for the item. *)
     item_source : source option ;
     item_data : 'a option ;
+    (** Additional data, since RSS can be extended with namespace-prefixed nodes.*)
   }
 
 type ('a, 'b) channel_t =
@@ -189,6 +190,7 @@ type ('a, 'b) channel_t =
     (** A hint for aggregators telling them which days they can skip. *)
     ch_items : 'b item_t list ;
     ch_data : 'a option ;
+        (** Additional data, since RSS can be extended with namespace-prefixed nodes.*)
   }
 
 type item = unit item_t
@@ -262,7 +264,7 @@ val merge_channels : channel -> channel -> channel
 
 (** {2 Reading channels} *)
 
-(** This represents XML trees. This XML trees are given to
+(** This represents XML trees. Such XML trees are given to
   functions provided to read additional data from RSS channels and items. *)
 type xmltree =
     E of Xmlm.tag * xmltree list

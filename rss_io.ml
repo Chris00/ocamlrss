@@ -571,7 +571,7 @@ let default_date_format = "%d %b %Y %T %z"
 
 let err_date d = ()
 (*
-  let module D = Rss_date in
+  let module D = Netdate in
   let p = Printf.eprintf in
   prerr_endline "{";
   p "year = %d\n" d.D.year ;
