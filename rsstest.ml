@@ -32,7 +32,8 @@ let main () =
     fatal (Printf.sprintf "Usage: %s <rss file>" Sys.argv.(0));
   try
     let (channel, errors) = Rss.channel_of_file Sys.argv.(1) in
-    Rss.print_channel Format.std_formatter channel
+    Rss.print_channel ~indent: 2 Format.std_formatter channel;
+    List.iter prerr_endline errors
   with
     | Sys_error s | Failure s -> fatal s
 ;;

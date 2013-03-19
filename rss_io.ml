@@ -32,10 +32,10 @@ type tree =
     E of Xmlm.tag * tree list
   | D of string
 
-let string_of_xml tree =
+let string_of_xml ?indent tree =
   try
     let b = Buffer.create 256 in
-    let output = Xmlm.make_output ~decl: false (`Buffer b) in
+    let output = Xmlm.make_output ~indent ~decl: false (`Buffer b) in
     let frag = function
     | E (tag, childs) -> `El (tag, childs)
     | D d -> `Data d
@@ -58,7 +58,7 @@ let source_string = function
 
 let xml_of_source source =
   try
-    let input = Xmlm.make_input ~enc: (Some `UTF_8) source in
+    let input = Xmlm.make_input ~strip: true ~enc: (Some `UTF_8) source in
     let el tag childs = E (tag, childs)  in
     let data d = D d in
     let (_, tree) = Xmlm.input_doc_tree ~el ~data input in
@@ -736,8 +736,8 @@ let xml_of_channel ~date_fmt ch =
   E ((("","rss"), [("","version"), "2.0"]), [xml_ch])
 
 
-let print_channel ?(date_fmt=default_date_format) ?(encoding="ISO-8859-1")fmt ch =
+let print_channel ?indent ?(date_fmt=default_date_format) ?(encoding="UTF-8")fmt ch =
   let xml = xml_of_channel ~date_fmt ch in
   Format.fprintf fmt "<?xml version=\"1.0\" encoding=\"%s\" ?>\n" encoding;
-  Format.fprintf fmt "%s" (string_of_xml xml )
+  Format.fprintf fmt "%s" (string_of_xml ?indent xml )
 

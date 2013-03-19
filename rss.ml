@@ -225,10 +225,10 @@ let channel_of_channel = Rss_io.channel_of_channel
 
 let print_channel = Rss_io.print_channel
 
-let print_file ?date_fmt ?encoding file ch =
+let print_file ?indent ?date_fmt ?encoding file ch =
   let oc = open_out file in
   let fmt = Format.formatter_of_out_channel oc in
-  print_channel ?date_fmt ?encoding fmt ch;
+  print_channel ?indent ?date_fmt ?encoding fmt ch;
   Format.pp_print_flush fmt ();
   close_out oc
 

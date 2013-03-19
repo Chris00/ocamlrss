@@ -272,8 +272,8 @@ val channel_of_channel : ?opts: opts -> in_channel -> (channel * string list)
 
 (** {2 Writing channels} *)
 
-val print_channel : ?date_fmt: string -> ?encoding: string ->
+val print_channel : ?indent: int -> ?date_fmt: string -> ?encoding: string ->
                     Format.formatter -> channel -> unit
 
-val print_file : ?date_fmt: string -> ?encoding: string ->
+val print_file : ?indent: int -> ?date_fmt: string -> ?encoding: string ->
                  string -> channel -> unit
