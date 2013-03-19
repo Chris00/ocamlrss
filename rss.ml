@@ -25,8 +25,6 @@
 
 type date = Netdate.t
 
-let since_epoch = Netdate.since_epoch
-let float_to_date t = Netdate.create t
 let string_of_date ?(fmt="%d %b %Y") date = Netdate.format ~fmt date
 
 type email = string (** can be, for example: foo@bar.com (Mr Foo Bar) *)

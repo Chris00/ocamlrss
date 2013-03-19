@@ -33,12 +33,6 @@
 
 type date = Netdate.t
 
-val since_epoch : date -> float
-(** Convert a date/time record into the time (seconds since the epoch). *)
-
-val float_to_date : float -> date
-(** Convert the time (seconds since the epoch) to a date/time record. *)
-
 val string_of_date : ?fmt: string -> date -> string
 (** Format a date/time record as a string according to the format
     string [fmt].
