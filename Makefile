@@ -26,7 +26,7 @@
 #
 VERSION=2.1.0
 
-PACKAGES=xmlm,netstring,unix
+PACKAGES=xmlm,netstring
 
 OF_FLAGS=-package $(PACKAGES)
 OCAMLFIND=ocamlfind
