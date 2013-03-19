@@ -1,4 +1,4 @@
-Next release:
+Release 2.1.0
 - handle namespaces (the list is stored in the channel structure)
 - allow the library user to read addition information from
   <item> and <channel> prefixed subnodes, as the RSS 2.0 specification
