@@ -1,3 +1,6 @@
+Next release:
+- fix #5: incorrect sort
+
 Release 2.1.0
 - handle namespaces (the list is stored in the channel structure)
 - allow the library user to read addition information from
