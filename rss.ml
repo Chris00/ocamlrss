@@ -216,7 +216,7 @@ let sort_items_by_date =
        | None, Some _ -> 1
        | Some d1, Some d2 ->
            compare
-             (Netdate.since_epoch d2)
+             (Netdate.since_epoch d1)
              (Netdate.since_epoch d2)
     );;
 
