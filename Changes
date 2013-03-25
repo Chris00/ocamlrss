@@ -1,4 +1,5 @@
 Next release:
+- add: Rss.xml_of_source
 - fix #5: incorrect sort
 
 Release 2.1.0
