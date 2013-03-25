@@ -636,12 +636,12 @@ let xml_of_guid = function
 
 let xmls_of_guid_opt = xmls_of_opt_f xml_of_guid
 
-let xml_of_source s =
+let xml_of_source_field s =
   E ((("", "source"), [("","url"), (Neturl.string_of_url s.src_url)]),
 	   [D s.src_name]
 	  )
 
-let xmls_of_source_opt = xmls_of_opt_f xml_of_source
+let xmls_of_source_opt = xmls_of_opt_f xml_of_source_field
 
 let xml_of_image i =
   E ((("", "image"), []),

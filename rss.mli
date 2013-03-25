@@ -26,7 +26,7 @@
 (** The RSS library to read and write RSS 2.0 files.
 
     Reference:
-    {{:http://www.rss-specification.com/rss-2.0-specification.htm}RSS
+    {{:http://www.rssboard.org/rss-specification}RSS
     2.0 specification}. *)
 
 (** {2 Types} *)
@@ -268,6 +268,10 @@ val merge_channels : channel -> channel -> channel
 type xmltree =
     E of Xmlm.tag * xmltree list
   | D of string
+
+(** Read an XML tree from a source.
+   @raise Failure in case of error.*)
+val xml_of_source : Xmlm.source -> xmltree
 
 (** Use this exception to indicate an error is functions given to [make_opts] used
   to read additional data from prefixed XML nodes. *)

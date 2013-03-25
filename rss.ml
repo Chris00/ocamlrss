@@ -230,6 +230,8 @@ type xmltree = Rss_io.xmltree =
     E of Xmlm.tag * xmltree list
   | D of string
 
+let xml_of_source = Rss_io.xml_of_source
+
 exception Error = Rss_io.Error
 
 type ('a, 'b) opts = ('a, 'b) Rss_io.opts
