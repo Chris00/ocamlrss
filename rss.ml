@@ -207,7 +207,7 @@ let copy_channel c =
   { c with ch_items = List.map copy_item c.ch_items }
 ;;
 
-let sort_items_by_date =
+let sort_items_by_date l =
   List.sort
     (fun i1 i2 ->
       match i1.item_pubdate, i2.item_pubdate with
@@ -218,7 +218,7 @@ let sort_items_by_date =
            compare
              (Netdate.since_epoch d1)
              (Netdate.since_epoch d2)
-    );;
+    ) l;;
 
 let merge_channels c1 c2 =
   let items = sort_items_by_date (c1.ch_items @ c2.ch_items) in
@@ -242,6 +242,7 @@ let default_opts = Rss_io.default_opts
 let channel_t_of_file = Rss_io.channel_of_file
 let channel_t_of_string = Rss_io.channel_of_string
 let channel_t_of_channel = Rss_io.channel_of_channel
+let channel_t_of_xmls = Rss_io.channel_of_xmls
 
 let channel_of_file = Rss_io.channel_of_file default_opts
 let channel_of_string = Rss_io.channel_of_string default_opts

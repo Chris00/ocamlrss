@@ -242,20 +242,20 @@ val channel :
     fields are set to [None] unless the corresponding optional
     parameter is used. *)
 
-val copy_item : item -> item
-val copy_channel : channel -> channel
+val copy_item : 'a item_t -> 'a item_t
+val copy_channel : ('a, 'b) channel_t -> ('a, 'b) channel_t
 
 
 (** {2 Manipulating channels} *)
 
-val keep_n_items : int -> channel -> channel
+val keep_n_items : int -> ('a, 'b) channel_t -> ('a, 'b) channel_t
 (** [keep_n_items n ch] returns a copy of the channel, keeping only
     [n] items maximum. *)
 
-val sort_items_by_date : item list -> item list
+val sort_items_by_date : 'a item_t list -> 'a item_t list
 (** Sort items by date, older last. *)
 
-val merge_channels : channel -> channel -> channel
+val merge_channels : ('a, 'b) channel_t -> ('a, 'b) channel_t -> ('a, 'b) channel_t
 (** [merge_channels c1 c2] merges the given channels in a new channel,
     sorting items using {!sort_items_by_date}. Channel information are
     copied from the first channel [c1]. *)
@@ -303,6 +303,10 @@ val default_opts : (unit, unit) opts
 val channel_t_of_file : ('a, 'b) opts -> string -> (('a, 'b) channel_t * string list)
 val channel_t_of_string : ('a, 'b) opts -> string -> (('a, 'b) channel_t * string list)
 val channel_t_of_channel : ('a, 'b) opts -> in_channel -> (('a, 'b) channel_t * string list)
+
+(** Read a channel from XML trees. These trees correspond to nodes under the ["channel"] XML node
+ of a reguler RSS document. *)
+val channel_t_of_xmls : ('a, 'b) opts -> xmltree list -> (('a, 'b) channel_t * string list)
 
 val channel_of_file : string -> (channel * string list)
 val channel_of_string : string -> (channel * string list)

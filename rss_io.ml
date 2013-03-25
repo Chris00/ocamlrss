@@ -570,6 +570,7 @@ let channel_of_file opts file =
 ;;
 
 let channel_of_channel opts ch = channel_of_source opts (`Channel ch);;
+let channel_of_xmls opts xmls = (channel_of_xmls opts xmls, opts.errors)
 
 (** {2 Printing} *)
 
