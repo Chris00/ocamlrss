@@ -1,4 +1,5 @@
 Next release:
+- add: Rss.compare_item
 - fix: provide polymorphic functions on channel_t and on item_t
 - add: Rss.channel_t_of_xmls
 - add: Rss.xml_of_source
