@@ -201,6 +201,8 @@ let channel ~title ~link ~desc
     ch_namespaces = namespaces ;
   }
 
+let compare_item = Rss_types.compare_item;;
+
 let copy_item i = { i with item_title = i.item_title };;
 
 let copy_channel c =

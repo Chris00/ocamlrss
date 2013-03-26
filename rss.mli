@@ -237,10 +237,11 @@ val channel :
   ?namespaces: namespace list ->
   'b item_t list ->
   ('a, 'b) channel_t
-
 (** [channel items] creates a new channel containing [items].  Other
     fields are set to [None] unless the corresponding optional
     parameter is used. *)
+
+val compare_item : ?comp_data: ('a -> 'a -> int) -> 'a item_t -> 'a item_t -> int
 
 val copy_item : 'a item_t -> 'a item_t
 val copy_channel : ('a, 'b) channel_t -> ('a, 'b) channel_t
