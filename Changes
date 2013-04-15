@@ -1,11 +1,11 @@
-Next release:
+Release 2.2.0:
 - add: Rss.compare_item
 - fix: provide polymorphic functions on channel_t and on item_t
 - add: Rss.channel_t_of_xmls
 - add: Rss.xml_of_source
 - fix #5: incorrect sort
 
-Release 2.1.0
+Release 2.1.0:
 - handle namespaces (the list is stored in the channel structure)
 - allow the library user to read addition information from
   <item> and <channel> prefixed subnodes, as the RSS 2.0 specification
