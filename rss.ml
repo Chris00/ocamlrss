@@ -218,8 +218,8 @@ let sort_items_by_date l =
        | None, Some _ -> 1
        | Some d1, Some d2 ->
            compare
-             (Netdate.since_epoch d1)
              (Netdate.since_epoch d2)
+             (Netdate.since_epoch d1)
     ) l;;
 
 let merge_channels c1 c2 =
