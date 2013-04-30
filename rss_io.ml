@@ -91,9 +91,10 @@ exception Error of string;;
 let error msg = raise (Error msg);;
 
 let find_ele name e =
-    match e with
-      E ((("",e),_),_) when name = String.lowercase e -> true
-    | _ -> false
+  match e with
+    E ((("",e),_),_) when name = String.lowercase e -> true
+  | E ((("http://purl.org/rss/1.0/",e),_),_) when name = String.lowercase e -> true
+  | _ -> false
 
 let apply_opt f = function
     None -> None
@@ -515,19 +516,15 @@ let channel_of_source opts source =
              with
                Not_found -> failwith "Parse error: no channel"
             )
-      |	"rdf:rdf" ->
+        |	"rdf" ->
             (
-             match subs with
-             | [] ->
-                 failwith "Parse error: no channel"
-             | (E ((("",e), atts), subs)) :: q ->
-                 (
-                  match String.lowercase e with
-                    "channel" ->
-                      (channel_of_xmls opts (subs @ q), opts.errors)
-                  | _ -> failwith "Parse error: not channel"
-                 )
-             | _ ->
+             try
+               let elt =  List.find (find_ele "channel") subs in
+               match elt with
+               | E ((_, atts), subs_ch)->
+                   (channel_of_xmls opts (subs_ch @ subs), opts.errors)
+               | _ -> assert false
+             with Not_found ->
                  failwith "Parse error: not channel"
             )
         |	_ ->
