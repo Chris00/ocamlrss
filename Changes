@@ -1,3 +1,7 @@
+Next release:
+- fix: rdf parsing
+- fix: Rss.sort_items_by_date sorts with old items last, as documented
+
 Release 2.2.0:
 - add: Rss.compare_item
 - fix: provide polymorphic functions on channel_t and on item_t
