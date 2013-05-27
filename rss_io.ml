@@ -35,7 +35,7 @@ type xmltree =
 let string_of_xml ?ns_prefix ?indent tree =
   try
     let b = Buffer.create 256 in
-    let output = Xmlm.make_output ?ns_prefix ~indent ~decl: false (`Buffer b) in
+    let output =Xmlm.make_output ?ns_prefix ~indent ~decl: false (`Buffer b) in
     let frag = function
     | E (tag, childs) -> `El (tag, childs)
     | D d -> `Data d
@@ -58,7 +58,9 @@ let source_string = function
 
 let xml_of_source source =
   try
-    let input = Xmlm.make_input ~strip: true ~enc: (Some `UTF_8) source in
+    let input = Xmlm.make_input ~strip: true ~enc: (Some `UTF_8)
+      (*~entity: (fun s -> Some s)*) source
+    in
     let el tag childs = E (tag, childs)  in
     let data d = D d in
     let (_, tree) = Xmlm.input_doc_tree ~el ~data input in
@@ -532,7 +534,7 @@ let channel_of_source opts source =
       in
       let namespaces =
          let f ((prefix, name), value) acc =
-           if prefix = Xmlm.ns_xmlns then
+           if prefix = Xmlm.ns_xmlns && name <> "xmlns" then
              (name, value) :: acc
           else
             acc
