@@ -23,9 +23,10 @@
 #                                                                             #
 ###############################################################################
 
-#
-VERSION=2.2.0
+# do not forget to update META file too
+VERSION=2.2.1
 
+# do not forget to update META file too
 PACKAGES=xmlm,netstring
 
 OF_FLAGS=-package $(PACKAGES)

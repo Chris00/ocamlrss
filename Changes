@@ -1,4 +1,5 @@
-Next release:
+Release 2.2.1:
+- fix: do not set default namespace in final rss
 - fix: rdf parsing
 - fix: Rss.sort_items_by_date sorts with old items last, as documented
 
